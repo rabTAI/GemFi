@@ -689,6 +689,29 @@ async function loadContracts() {
 	nftContract = new web3.eth.Contract(contAbi, contAddress);
 	console.log('Done loading contracts.')
 }
+async function getTokenId(tx) {
+	const _tx = tx instanceof Promise ? await tx : tx;
+	const _receipt = await _tx.wait();
+	const _interface = new ethers.utils.Interface([
+		'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
+	]);
+	const _data = _receipt.logs[0].data;
+	const _topics = _receipt.logs[0].topics;
+	const _event = _interface.decodeEventLog('Transfer', _data, _topics);
+	return _event.tokenId;
+}
+
+async function upgradeSuccessOrNot(tx) {
+	const _tx = tx instanceof Promise ? await tx : tx;
+	const _receipt = await _tx.wait();
+	const _interface = new ethers.utils.Interface([
+		'event GemUpgrade(bool trueOrFalse, uint256 gemId)',
+	]);
+	const _data = _receipt.logs[7].data;
+	const _topics = _receipt.logs[7].topics;
+	const _event = _interface.decodeEventLog('GemUpgrade', _data, _topics);
+	return { trueOrFalse: _event.trueOrFalse, gemId: JSON.parse(_event.gemId) };
+}
 
 async function mint(mintAmount) {
 	var mintPrice = 1e18;
@@ -717,10 +740,9 @@ async function mint(mintAmount) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	if (newNFT) {
-		const newTokenId = await getTokenId(newNFT);
-		alert("tokenID minted: " + newTokenId);
-	}
+	// const newTokenId = getTokenId(newNFT);
+	// console.log("tokenID minted: " + newTokenId);
+	// alert("tokenID minted: " + newTokenId);
 }
 
 async function upgrade(gem1, gem2, gem3) {
@@ -745,14 +767,14 @@ async function upgrade(gem1, gem2, gem3) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	checkUpgrade = await upgradeSuccessOrNot(newNFT);
-	console.log(checkUpgrade);
-	if (upgrade == true) {
-		alert("Upgrade was successful. New minted NFT: ", checkUpgrade.gemId);
-	}
-	else if (upgrade == false) {
-		alert("Upgrade Failed");
-	}
+	// checkUpgrade = upgradeSuccessOrNot(newNFT);
+	// console.log(checkUpgrade);
+	// if (upgrade == true) {
+	// 	alert("Upgrade was successful. New minted NFT: ", checkUpgrade.gemId);
+	// }
+	// else if (upgrade == false) {
+	// 	alert("Upgrade Failed");
+	// }
 	// location.reload();
 }
 
@@ -833,11 +855,11 @@ async function getGameStats() {
 
 		stat2 += '<h5 class="mb-md-3 text-center">Gem Pot Board</h5>\n';
 
-		// var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
+		var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
 
 		// if (getTotalHighLevelGems > 0) {
 		// 	var highestLevelGems = await nftContract.methods.highestLevelGems().call();
-		// 	for (let i = 0; i < highestLevelGems; i++) {
+		// 	for (let i = 0; i < getTotalHighLevelGems; i++) {
 		// 		var owner = await nftContract.methods.ownerOf(highestLevelGems[i
 		// 		]).call();
 		// 		//console.log(owner);
