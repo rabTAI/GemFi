@@ -21,27 +21,31 @@
     border-radius: 20px;
     overflow-y: scroll;
 }
+
 .gemContainer {
-display:flex;
-flex-direction: row;
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     padding: 5px;
     justify-content: space-between;
 }
-.myGemImage{
-justify-content: center;
-padding: 5px;
+
+.myGemImage {
+    justify-content: center;
+    padding: 5px;
 }
-.gem{
+
+.gem {
     max-width: 75px;
-        max-height: 100px;
+    max-height: 100px;
 }
+
 .logo {
     font-size: 2rem;
     font-family: 'Orbitron', sans-serif;
-}s
+}
 
-.heading {
+s .heading {
     font-size: 5rem;
     font-family: 'Orbitron', sans-serif;
 }

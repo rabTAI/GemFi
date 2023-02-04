@@ -1,4 +1,6 @@
-const contAddress = "0x19F4e328f9f78238ADc3b772b8f8891E1475b0bc"; //Test FTM net
+// const contAddress = "0x19F4e328f9f78238ADc3b772b8f8891E1475b0bc"; //Test FTM net 1
+const contAddress = "0xb461627bff821a246E50F12C5026abB10bD3b1e3"; //Test FTM net 2
+
 const contAbi = [
 	{
 		"inputs": [],
@@ -59,10 +61,16 @@ const contAbi = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "bool",
 				"name": "trueOrFalse",
 				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "getId",
+				"type": "uint256"
 			}
 		],
 		"name": "GemUpgrade",
@@ -92,19 +100,6 @@ const contAbi = [
 		],
 		"name": "Transfer",
 		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "RANDOM",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -490,6 +485,49 @@ const contAbi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenByIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenOfOwnerByIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "_gemId",
 				"type": "uint256"
 			}
@@ -500,6 +538,19 @@ const contAbi = [
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -566,7 +617,7 @@ const contAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "withdrawFee",
+		"name": "withdrawCollectedFee",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -757,7 +808,6 @@ async function getGameStats() {
 
 		var gemPot = await nftContract.methods.gamePot().call();
 		var activeSupply = await nftContract.methods.activeSupply().call();
-		// var getHighestLevelGems = await nftContract.methods.getHighestLevelGems().call();
 		var highestLevel = await nftContract.methods.highestGemLevel().call();
 		var lastDraw = await nftContract.methods.lastDraw().call();
 		let lastDrawDate = new Date(lastDraw * 1000).toLocaleString('en-GB');
@@ -783,23 +833,26 @@ async function getGameStats() {
 
 		stat2 += '<h5 class="mb-md-3 text-center">Gem Pot Board</h5>\n';
 
-		var highestLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
+		// var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
 
-		for (let i = 0; i < highestLevelGems; i++) {
-			var owner = await nftContract.methods.ownerOf(highestLevelGems[i
-			]).call();
-			//console.log(owner);
-			stat2 += '<p>' + owner.replace(owner.substring(5,
-				38),
-				"***") + '</p>';
-		}
+		// if (getTotalHighLevelGems > 0) {
+		// 	var highestLevelGems = await nftContract.methods.highestLevelGems().call();
+		// 	for (let i = 0; i < highestLevelGems; i++) {
+		// 		var owner = await nftContract.methods.ownerOf(highestLevelGems[i
+		// 		]).call();
+		// 		//console.log(owner);
+		// 		stat2 += '<p>' + owner.replace(owner.substring(5,
+		// 			38),
+		// 			"***") + '</p>';
+		// 	}
+		// }
 		stat2 += '<button id="win" class="text-center mintButton-outline btn-sm" onclick="pickWinner()"role="button" style="justify-self: center;">Pick Winner</button>';
 
 		document.getElementById("stat1").innerHTML = stat;
 		document.getElementById("stat2").innerHTML = stat2;
 
-		await getOwnedGem();
-		// dropDownSetup();
+		await getOwnedGemTest();
+		dropDownSetup();
 	} catch (err) {
 		console.log(err);
 	}
@@ -809,32 +862,56 @@ async function getOwnedGem() {
 
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
 	// console.log("balance " + bal);
-	var response = await fetch(`https://api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
-	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${testContract}`)
+	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
+	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${testContract
+		}`)
 		.catch(err => {
 			console.log("error: " + err)
 		});
-	var data = await response.json();
+	var nft = await response.json();
 	// console.log(ownedNFts.length);
 	for (let i = 0; i < bal; i++) {
-		console.log(data.nfts[i]);
-		ownedNFts.push(data.nfts[i]);
+		console.log(nft.nfts[i
+		]);
+		ownedNFts.push(nft.nfts[i
+		]);
 		// showImage(ownedNFts[i].image, ownedNFts[i].name);
 		// 	var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
 		// 	ownedNFts.push(nfts);
-		// 	var uri = await nftContract.methods.tokenURI(nfts).call();
-		// 	await fetch(uri)
-		// 		.then(res => res.json())
-		// 		.then(data => {
-		// 			//console.log(data);
-		// 			showImage(data.image, data.name);
-		// 		})
-		// 		.catch(err => {
-		// 			console.log("error: " + err)
-		// 			//debugAlert("getStaked() err" + err);
-		// 		});
+		// var uri = await nftContract.methods.tokenURI(ownedNFts[i].token_id).call();
+		// await fetch(uri)
+		// 	.then(res => res.json())
+		// 	.then(data => {
+		// 		//console.log(data);
+		// 		// showImage(data.image, data.name);
+		// 	})
+		// 	.catch(err => {
+		// 		console.log("error: " + err)
+		// 		//debugAlert("getStaked() err" + err);
+		// 	});
 	}
-	showImage();
+	// showImage();
+}
+
+async function getOwnedGemTest() {
+	var bal = await nftContract.methods.balanceOf(currentAddr).call();
+	console.log("balance " + bal);
+	for (let i = 0; i < bal; i++) {
+		var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
+		console.log(nfts);
+		ownedNFts.push(nfts);
+		// var uri = await nftContract.methods.tokenURI(nfts).call();
+		// await fetch(uri)
+		// 	.then(res => res.json())
+		// 	.then(data => {
+		// 		console.log(data);
+		// 		// showImage(data.image, data.name);
+		// 	})
+		// 	.catch(err => {
+		// 		console.log("error: " + err)
+		// 		//debugAlert("getStaked() err" + err);
+		// 	});
+	}
 }
 
 async function showImage() {
