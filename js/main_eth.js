@@ -577,6 +577,7 @@ var nftContract;
 var currentAddr;
 var web3;
 var ownedNFts = [];
+var testContract = "0x41f3532B4667b3A4a526EeA0c4103e486c5053e7"; //FAM reward card
 
 async function connect() {
 	console.log('Connecting to wallet...')
@@ -644,7 +645,7 @@ async function mint(mintAmount) {
 
 	var totalPrice = mintPrice * mintAmount;
 
-	const newNFT = nftContract.methods.mint(mintAmount).send({
+	const newNFT = await nftContract.methods.mint(mintAmount).send({
 		from: currentAddr,
 		value: totalPrice
 	}, function (error, hash) {
@@ -665,8 +666,10 @@ async function mint(mintAmount) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	const newTokenId = getTokenId(newNFT);
-	alert("tokenID minted: " + newTokenId);
+	if (newNFT) {
+		const newTokenId = await getTokenId(newNFT);
+		alert("tokenID minted: " + newTokenId);
+	}
 }
 
 async function upgrade(gem1, gem2, gem3) {
@@ -796,7 +799,7 @@ async function getGameStats() {
 		document.getElementById("stat2").innerHTML = stat2;
 
 		await getOwnedGem();
-		dropDownSetup();
+		// dropDownSetup();
 	} catch (err) {
 		console.log(err);
 	}
@@ -805,33 +808,51 @@ async function getGameStats() {
 async function getOwnedGem() {
 
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
+	// console.log("balance " + bal);
+	var response = await fetch(`https://api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
+	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${testContract}`)
+		.catch(err => {
+			console.log("error: " + err)
+		});
+	var data = await response.json();
+	// console.log(ownedNFts.length);
 	for (let i = 0; i < bal; i++) {
-		var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
-		ownedNFts.push(nfts);
-		var uri = await nftContract.methods.tokenURI(nfts).call();
-		await fetch(uri)
-			.then(res => res.json())
-			.then(data => {
-				//console.log(data);
-				showImage(data.image, data.name);
-			})
-			.catch(err => {
-				console.log("error: " + err)
-				//debugAlert("getStaked() err" + err);
-			});
+		console.log(data.nfts[i]);
+		ownedNFts.push(data.nfts[i]);
+		// showImage(ownedNFts[i].image, ownedNFts[i].name);
+		// 	var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
+		// 	ownedNFts.push(nfts);
+		// 	var uri = await nftContract.methods.tokenURI(nfts).call();
+		// 	await fetch(uri)
+		// 		.then(res => res.json())
+		// 		.then(data => {
+		// 			//console.log(data);
+		// 			showImage(data.image, data.name);
+		// 		})
+		// 		.catch(err => {
+		// 			console.log("error: " + err)
+		// 			//debugAlert("getStaked() err" + err);
+		// 		});
 	}
+	showImage();
 }
 
-async function showImage(imgData, imgId) {
+async function showImage() {
 	// var imgData = "data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE2MCIgd2lkdGg9IjQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYigyMTYsMCwxOSk7c3RvcC1vcGFjaXR5OjEiLyA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYigxNTUsMTcsMzApO3N0b3Atb3BhY2l0eTowIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjIwMCIgY3k9Ijg1IiByeD0iMTAwIiByeT0iNTAic3R5bGU9ImZpbGw6cmdiKDAsMCwwKTtvcGFjaXR5OjAuNSIvPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSI4MCIgcng9IjEwMCIgcnk9IjUwIiBzdHlsZT0iZmlsbDpyZ2IoMTI4LDAsMCk7c3Ryb2tlOnB1cnBsZTtzdHJva2Utd2lkdGg6MiIvPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSI4MCIgcng9IjkwIiByeT0iNTAiIHN0eWxlPSJmaWxsOnVybCgjZ3JhZGllbnQpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjgwIiByeD0iNjUiIHJ5PSIzNSIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCkiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxNDAsODAgMTIwLDEwMCIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjQiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxMjAsMTAwIDEwMCw4MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjgiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxNjAsNjAgMTQwLDgwICIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjIiIC8+PHBvbHlnb24gcG9pbnRzPSIxMjAsNjAgMTM1LDQ1IDE2MCw2MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eToxIi8+PHBvbHlnb24gcG9pbnRzPSIxMzUsNDUgMTYwLDYwIDE4MCw0NSIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjIiLz48cG9seWdvbiBwb2ludHM9IjE4MCw0NSAyMDAsMzAgMjIwLDQ1IiBzdHlsZT0iZmlsbDp3aGl0ZTtvcGFjaXR5OjAuNCIvPjxwb2x5Z29uIHBvaW50cz0iMTIwLDEwMCAxNjAsMTAwIDE0MCw4MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eToxIi8+PHBvbHlnb24gcG9pbnRzPSIxMjAsMTAwIDE2MCwxMDAgMTQwLDEyMCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjgiLz48cG9seWdvbiBwb2ludHM9IjE2MCwxMDAgMTgwLDExMCAxNDAsMTIwICAiIHN0eWxlPSJmaWxsOndoaXRlO29wYWNpdHk6MC4xIi8+PHBvbHlnb24gcG9pbnRzPSIxODAsMTEwIDIyMCwxMTAgMjAwLDEzMCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjYiLz48dGV4dCB4PSIyMDAiIHk9IjcwIiBzdHlsZT0iZmlsbDpibGFjazsiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjA8dHNwYW4gdGV4dC1hbmNob3I9Im1pZGRsZSI+PC90c3Bhbj48dHNwYW4geD0iMjAwIiB5PSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MDwvdHNwYW4+PHRzcGFuIHRleHQtYW5jaG9yPSJtaWRkbGUiPjwvdHNwYW4+PC90ZXh0Pjwvc3ZnPg==";
 	var hidden = document.getElementById("myGem");
-	var imgContainer = document.getElementById("gemContainer").innerHTML;
-	imgContainer += '<div class="p-2 justify-content-center">\n';
-	imgContainer += '<img src="' + imgData + '">\n';
-	imgContainer += '<p class="text-white">' + imgId + '</p>\n';
-	imgContainer += '</div>'
+	var gemContainer = document.getElementById("gemContainer");
 
-	document.getElementById("gemContainer").innerHTML = imgContainer;
+	ownedNFts.forEach(element => {
+		// Create a div and add a class
+		var new_div = document.createElement("div");
+		new_div.className = "myGemImage";
+		var myGem = new_div.innerHTML;
+		myGem += '<img class="gem" src="' + element.image + '">\n';
+		myGem += '<p class="text-white">' + element.name + '</p>\n';
+		new_div.innerHTML = myGem;
+		console.log(myGem);
+		gemContainer.appendChild(new_div);
+	});
 	hidden.removeAttribute("hidden");
 }
 
