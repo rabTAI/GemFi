@@ -1,26 +1,63 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap');
 
-.welcome-container {
+.bg-image-full{
+    background-image: url(../assets/img/gemBG.jpg);
     background-repeat: no-repeat;
-    background-attachment: scroll;
     background-position: center;
     background-size: cover;
-    background-color: rgb(0, 0, 0, 0.5);
+    background-attachment: fixed;
+    min-height: 300px;
+    width: 100%;
+}
+
+.bg-Blue{
+    background-color: #00193e;
+}
+
+.welcome-container {
+    background-color: rgb(0, 0, 0, 0.3);
     box-shadow: 0px 5px 50px #303030, inset 0px 0px 0px rgb(0 0 0 / 32%);
 }
-
-.base-container {
-    background-color: rgb(0, 0, 0, 0.5);
-    box-shadow: 0px 5px 30px #303030, inset 0px 0px 0px rgb(0 0 0 / 32%);
-    border-radius: 20px;
+.fixed-container {
+    position: absolute;
+    top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    text-align: center;
 }
-
+.base-container {
+    /* background-color: rgb(0, 0, 0, 0.5); */
+    border-radius: 20px;
+    box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
+}
+.text-container{
+    background-color: rgb(0, 0, 0, 0.3);
+    box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
+    border-radius: 20px;
+    border: 2px solid whitesmoke;
+}
 .stat-container {
     background: transparent;
-    box-shadow: 0px 5px 30px #303030, inset 0px 0px 0px rgb(0 0 0 / 32%);
+    box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
     border-radius: 20px;
-    overflow-y: scroll;
+    border: 2px solid rgb(0, 72, 197);
+    overflow-y:hidden;
 }
+.stat-container2 {
+    background: transparent;
+    box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
+    border-radius: 20px;
+    border: 2px solid rgb(0, 72, 197);
+    overflow-y: hidden;
+}
+@media screen and (max-width: 991px) {
+    .stat-container{
+margin-top: 350px;
+margin-bottom: 30px;
+    } 
+    }
 
 .gemContainer {
     display: flex;
@@ -45,18 +82,18 @@
     font-family: 'Orbitron', sans-serif;
 }
 
-s .heading {
-    font-size: 5rem;
-    font-family: 'Orbitron', sans-serif;
-}
-
-.subheading {
+.heading {
     font-size: 3rem;
     font-family: 'Orbitron', sans-serif;
 }
 
-.title {
+.subheading {
     font-size: 2rem;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.title {
+    font-size: 1.5rem;
     font-family: 'Orbitron', sans-serif;
 }
 
@@ -100,10 +137,11 @@ s .heading {
 
 .btn-group {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
     width: 100%;
+    margin-left: 30px;
 }
 
 .btn-group button {
@@ -113,6 +151,7 @@ s .heading {
     padding: 1rem 1.5rem;
     font-size: 1rem;
     cursor: pointer;
+    margin-bottom: 10px;
 }
 
 .input-group {

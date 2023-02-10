@@ -20,7 +20,7 @@
 
 <body>
     <!-- Responsive navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-Blue">
         <div class="container">
             <a class="navbar-brand logo" href="index.html">GemFI</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -29,8 +29,6 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link mx-3" href="#scroll">About</a></li>
-                    <li class="nav-item"><a class="nav-link mx-3" href="#stats">GameStats</a></li>
-                    <li class="nav-item"><a class="nav-link mx-3" href="#myGems">MyGems</a></li>
                     <li class="nav-item"><a class="nav-link mx-3"><button id="connectButton"
                                 class="btn myButton-outline btn-sm rounded-pill">Connect</button></a></li>
                 </ul>
@@ -38,20 +36,28 @@
         </div>
     </nav>
     <!-- Header - Welcome Container-->
-    <header class="py-3 welcome-container">
-        <div class=" text-center my-3">
-            <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
-            <h1 class="text-white heading">GemFi</h1>
-            <p class="text-white mb-0 subheading">Will Rock Your Life</p>
-            <a class="btn myButton btn-xl rounded-pill mt-5" href="#scroll">Learn More</a>
-        </div>
-    </header>
-    <!-- Content section Web3 Interaction-->
-    <section class="container py-3">
+    <section id="stats" class="py-3 welcome-container">
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class="row justify-content-between">
+                <div id="stat1" class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white" style="height:25rem">
+                </div>
+                <div class="fixed-container col-lg-3 text-center my-5">
+                    <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
+                    <h1 class="text-white heading">GemFi</h1>
+                    <p class="text-white mb-0 title">Will Rock Your Life</p>
+                    <a class="btn myButton btn-xl rounded-pill mt-5" href="#scroll">Learn More</a>
+                </div>
+                <div id="stat2" class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center" style="height:25rem">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Content section Web3 Interaction-->
+    <section class="py-3 mb-0 bg-image-full">
+        <div class="col-12 col-lg-12 col-sm-12 p-3 p-md-3">
+            <div class="row justify-content-between">
                 <!-- ======= Mint Section ======= -->
-                <div class="col-lg-5 base-container py-3 text-center justify-content-center">
+                <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
                     <h3 class="font-weight-bold title text-center text-white p-0 m-0 mb-3 mb-md-5">Mint GEM</h3>
                     <div class="input-group justify-content-center">
                         <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
@@ -63,39 +69,43 @@
                         <button class="mintButton-outline btn-lg rounded-pill" onclick="mintWrapper()"
                             role="button">MINT</button>
                     </div>
+                    <div id="balance"></div>
                 </div>
 
                 <!-- ======= Upgrade Section ======= -->
-                <div class="col-lg-6 base-container py-3 text-center justify-content-center">
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mb-3 mb-md-5">Upgrade GEM</h3>
-                    <div class="btn-group flex-wrap">
+                <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
+                    <h3 class="font-weight-bold title text-white p-0 m-0 mb-3 mb-md-5">Upgrade GEM</h3>
+                    <div class="btn-group">
                         <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1"
+                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 1st Gem
                             </button>
                             <ul class="dropdown-menu" id="dropdownMenu1">
                             </ul>
+                            <div class="gemContainer1"></div>
                         </div>
                         <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2"
+                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 2nd Gem
                             </button>
                             <ul class="dropdown-menu" id="dropdownMenu2">
                             </ul>
+                            <div class="gemContainer2"></div>
                         </div>
                         <div class="dropdown">
-                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton3"
+                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 3rd Gem
                             </button>
                             <ul class="dropdown-menu" id="dropdownMenu3">
                             </ul>
                         </div>
+                        <div class="gemContainer3"></div>
                     </div>
                     <div class="justify-content-center">
-                        <p class="text-center text-white p-3 ">Upgrade price: 0 FTM</p>
+                        <p class="text-center text-white pt-3 ">Upgrade price: 0 FTM</p>
                         <button class="mintButton-outline btn-lg rounded-pill" onclick="upgradeWrapper()"
                             role="button">Upgrade</button>
                     </div>
@@ -103,11 +113,10 @@
             </div>
         </div>
     </section>
-    <!-- Content section My GEM-->
+    <!-- Content section My GEM
     <section id="myGems" class="container">
         <div class="col-12 col-lg-12 p-3 p-md-3 mt-3">
             <div class="row justify-content-center ">
-                <!-- ======= myGEM Section ======= -->
                 <div id="myGem" hidden
                     class="col-lg-12 base-container py-3 p-md-3 mx-2 text-center justify-content-center myGem">
                     <h3 class="font-weight-bold title text-center text-white p-0 m-0 mb-3 mb-md-5">My GEM</h3>
@@ -116,43 +125,42 @@
                 </div>
             </div>
         </div>
-    </section>
-    <!-- Image element page break -->
-    <div id="stats" class="py-5 bg-image-full" style="background-image: url(./assets/img/background.jpg)">
-        <div class="row justify-content-center">
-            <div id="stat1" class="stat-container col-md-3 p-3 p-md-3 text-white" style="height:25rem">
-            </div>
-            <div class="col-md-4 text-white text-center" style="height:25rem">
-            </div>
-            <div id="stat2" class="stat-container col-md-3 p-3 p-md-3 text-white text-center" style="height:25rem">
-            </div>
-        </div>
-    </div>
+    </section> -->
     <!-- Content section About Project-->
-    <section id="scroll" class="container py-3">
+    <section id="scroll" class="py-3 welcome-container">
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class=" row justify-content-center ">
-                <div class="col-lg-12 base-container px-5 py-3 bg-black" style="--bs-bg-opacity: 50%"">
-                    <h2 class=" font-weight-bold text-white title text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
-                    <h5 class="text-white font-weight-bold">GemFI is gameFi involving SVG NFTs with a sprinkle of
+                <div class="col-lg-12 px-5 py-3">
+                    <h2 class="font-weight-bold text-white subheading text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
+                    <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a sprinkle of
                         gambling concept..</h5>
 
-                    <div class="col-lg-8">
-                        <h5 class="mt-5 sub-title text-white mb-0">How to play?</h5>
+                    <div class="col-lg-8 mt-5 px-5 py-2 text-container">
+                        <h5 class="mt-3 sub-title text-white mb-0">How to play?</h5>
                         <p></p>
                         <li class="text-white">Mint 3 Gem starting with level 1</li>
                         <p></p>
                         <li class="text-white">Upgrade 3 for 1 Gem with a chance of upgrade failing</li>
                         <p></p>
                         <li class=" text-white">Failed upgrade will mint 1 Gem with same level and balance</li>
-                        <p> <li class="text-white" style="padding-left:50px;">Balance from 2nd Gem paid to User</li></p>
-                        <p class="mt-0"><li class="text-white" style="padding-left:50px;">Balance from 3rd Gem goes to Gem Pot</li></p>
+                        <p>
+                            <li class="text-white" style="padding-left:50px;">Balance from 2nd Gem paid to User</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Balance from 3rd Gem goes to Gem Pot</li>
+                        </p>
 
                         <li class="text-white">Successful upgrade will mint 1 Gem with 3x Balance and +1 Level</li>
-                        <p><li class="text-white" style="padding-left:50px;">Upgrade Gems to get higher level for entry on
-                            Gem Pot Board</li></p>
-                        <p class="mt-0"><li class="text-white" style="padding-left:50px;">Winner of Gem pot picked from Gem Pot Board</li></p>
-                        
+                        <p>
+                            <li class="text-white" style="padding-left:50px;">Upgrade Gems to get higher level for entry
+                                on
+                                Gem Pot Board</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked from Gem Pot
+                                Board</li>
+                        </p>
+
                     </div>
                     <div class="col-lg-6"></div>
                 </div>
@@ -160,10 +168,13 @@
         </div>
     </section>
     <!-- Footer-->
-    <footer class="py-5 bg-dark">
+    <footer class="py-5 bg-Blue">
         <div class="container">
-            <p class="text-white text-center font-weight-bold"><a class="text-white text-center font-weight-bold" href="https://twitter.com/rabTAI" target="_blank">rabTAI</a> (Solidity) & 
-                <a class="text-white text-center font-weight-bold"href="https://twitter.com/ARTRoshuAngel" target="_blank">Roshu Angel</a> (Web)</p>
+            <p class="text-white text-center font-weight-bold"><a class="text-white text-center font-weight-bold"
+                    href="https://twitter.com/rabTAI" target="_blank">rabTAI</a> (Solidity) &
+                <a class="text-white text-center font-weight-bold" href="https://twitter.com/ARTRoshuAngel"
+                    target="_blank">Roshu Angel</a> (Web)
+            </p>
             <p class="m-0 text-center text-white">Copyright &copy; GemFI 2023</p>
         </div>
     </footer>
