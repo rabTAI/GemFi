@@ -703,50 +703,46 @@ async function loadContracts() {
 /* ----------------------------
 *	get Mint token from trxn
 * ----------------------------*/
-function getTokenId(tx) {
+async function getTokenId(tx) {
 	var newMints = [];
 
-	nftContract.events.Transfer({ fromBlock: tx.blockNumber }, function (error, events) { })
+	await nftContract.events.Transfer({ fromBlock: tx.blockNumber }, function (error, events) { })
 		.on('data', function (events) {
-			console.log(events.returnValues);
-			newMints.push(events.returnValues.tokenID);
+			var jj = events.returnValues.tokenId;
+			if (!newMints.includes(jj)) {
+				newMints.push(jj);
+			}
 		});
 
-	if (confirm("Mint was successful. New minted NFTs Token: " + newMints[0] + ", " + newMints[1] + ", " + newMints[2])) {
-		location.reload();
-	} else {
-		location.reload();
-	}
+	// if (confirm("Mint was successful. New minted NFTs Token: " + newMints[0] + ", " + newMints[1] + ", " + newMints[2])) {
+	// 	location.reload();
+	// } else {
+	// 	location.reload();
+	// }
+	return newMints;
 }
 
 /* ----------------------------
 *	get upgrade success from trxn
 * ----------------------------*/
 async function upgradeSuccessOrNot(tx) {
-	var tokenUpgraded;
+	var tokenUpgraded = 0;
 	var success;
 
-	nftContract.events.GemUpgrade({ fromBlock: tx.blockNumber }, function (error, events) { })
+	await nftContract.events.GemUpgrade({ fromBlock: tx.blockNumber }, function (error, events) { })
 		.on('data', function (events) {
-			console.log(events.returnValues);
+			// console.log(events.returnValues);
 			success = events.returnValues.trueOrFalse;
 			if (success == true) {
 				tokenUpgraded = events.returnValues.getId;
-				if (confirm("Upgrade was successful. New minted NFT: " + tokenUpgraded)) {
-					location.reload();
-				}
-				else {
-					location.reload();
-				}
-			}
-			else {
-				if (confirm("Upgrade Failed. Check About for more info")) {
-					location.reload();
-				} else {
-					location.reload();
-				}
+				// if (confirm("Upgrade was successful. New minted NFT: " + tokenUpgraded)) {
+				// 	location.reload();
+				// }
+				// else {
+				// 	location.reload();
 			}
 		});
+	return tokenUpgraded;
 }
 
 /* ----------------------------
@@ -754,11 +750,12 @@ async function upgradeSuccessOrNot(tx) {
 * ----------------------------*/
 async function mint(mintAmount) {
 	var mintPrice = 1e18;
-	console.log(mintPrice);
+	// console.log(mintPrice);
 
 	var totalPrice = mintPrice * mintAmount;
+	var minted = [];
 
-	const newNFT = await nftContract.methods.mint(mintAmount).send({
+	await nftContract.methods.mint(mintAmount).send({
 		from: currentAddr,
 		value: totalPrice
 	}, function (error, hash) {
@@ -768,11 +765,13 @@ async function mint(mintAmount) {
 				console.log("Attempting to get transaction receipt...");
 				web3.eth.getTransactionReceipt(hash, function (err, rec) {
 					if (rec) {
-						console.log(rec);
-						try {
-							getTokenId(rec);
-						} catch (error) {
-							console.log(error);
+						if (rec.status == true) {
+							console.log(rec);
+							try {
+								minted = getTokenId(rec);
+							} catch (error) {
+								console.log(error);
+							}
 						}
 						// alert("Mint Successful. Refresh the page");
 						clearInterval(interval);
@@ -784,14 +783,18 @@ async function mint(mintAmount) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-
+	if (minted.length != 0) {
+		sendAlert("New Minted token" + Arrays.toString(minted));
+		reloadStats();
+	}
 }
 /* ----------------------------
 *	Upgrade
 * ----------------------------*/
 async function upgrade(gem1, gem2, gem3) {
+	var token = 0;
 
-	var newNFT = await nftContract.methods.upgradeGems(gem1, gem2, gem3).send({
+	await nftContract.methods.upgradeGems(gem1, gem2, gem3).send({
 		from: currentAddr,
 		value: 0
 	}, function (error, hash) {
@@ -801,11 +804,13 @@ async function upgrade(gem1, gem2, gem3) {
 				console.log("Attempting to get transaction receipt...");
 				web3.eth.getTransactionReceipt(hash, function (err, rec) {
 					if (rec) {
-						console.log(rec);
-						try {
-							upgradeSuccessOrNot(rec);
-						} catch (error) {
-							console.log(error);
+						if (rec.status == true) {
+							console.log(rec);
+							try {
+								token = upgradeSuccessOrNot(rec);
+							} catch (error) {
+								console.log(error);
+							}
 						}
 						clearInterval(interval);
 					}
@@ -816,7 +821,14 @@ async function upgrade(gem1, gem2, gem3) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	// console.log(checkUpgrade);
+	if (token != 0) {
+		sendAlert("Upgraded NFT: " + token);
+		reloadStats();
+	}
+	else {
+		sendAlert("Upgrade failed");
+		reloadStats();
+	}
 	// location.reload();
 }
 
@@ -832,24 +844,30 @@ async function mintWrapper() {
 *	Upgrade wrapper
 * ----------------------------*/
 async function upgradeWrapper() {
-	var gem1 = document.getElementById("dropdownMenuButton1").textContent.split('Level').pop();
-	var gem2 = document.getElementById("dropdownMenuButton2").textContent.split('Level').pop();
-	var gem3 = document.getElementById("dropdownMenuButton3").textContent.split('Level').pop();
+	var gem1 = document.getElementById("dropdownMenuButton1").textContent.split('Lvl').pop();
+	var gem2 = document.getElementById("dropdownMenuButton2").textContent.split('Lvl').pop();
+	var gem3 = document.getElementById("dropdownMenuButton3").textContent.split('Lvl').pop();
 
 	if (gem1 == gem2 && gem2 == gem3) {
 		//console.log("3 gems are same level");
 		var t1 = document.getElementById("dropdownMenuButton1").textContent
-		var token1 = t1.slice(t1.indexOf('#') + 1, t1.lastIndexOf(':'));
+		var token1 = parseDropSelection(t1);
 		var t2 = document.getElementById("dropdownMenuButton2").textContent
-		var token2 = t2.slice(t2.indexOf('#') + 1, t2.lastIndexOf(':'));
+		var token2 = parseDropSelection(t2);
 		var t3 = document.getElementById("dropdownMenuButton3").textContent
-		var token3 = t3.slice(t3.indexOf('#') + 1, t3.lastIndexOf(':'));
+		var token3 = parseDropSelection(t3);
 
 		console.log(token1, token2, token3);
 		upgrade(token1, token2, token3);
 	} else {
 		console.log("Choose same level Gem");
+		sendAlert("Choose same level Gem");
 	}
+}
+
+function parseDropSelection(text) {
+	var token = text.slice(text.indexOf('#') + 1, text.lastIndexOf(':'));
+	return token;
 }
 
 /* ----------------------------
@@ -881,14 +899,28 @@ async function pickWinner() {
 /* ----------------------------
 *	Game Stats
 * ----------------------------*/
-async function getGameStats() {
+async function getDataContract() {
 	try {
 		await loadWeb3();
-		await getOwnedGemTest();
-		dropDownSetup();
+		await reloadStats();
+	} catch (e) {
+		console.log("Load Contract Error\n" + e);
+	}
+}
 
+async function reloadStats() {
+	sendAlert("...Updating data...");
+	document.getElementById("loader").classList.toggle("hide-loader");
+
+	await getOwnedGemTest();
+	await dropDownSetup();
+
+	try {
+		sendAlert("Getting Game Stats");
 		var stat = document.getElementById("stat1").innerHTML;
+		stat = '<h5 class="mb-md-3 sub-title text-center">Game Stats</h5>\n';
 		var stat2 = document.getElementById("stat2").innerHTML;
+		stat2 = '<h5 class="mb-md-3 sub-title text-center">Gem Pot Board</h5>\n';
 
 		var gemPot = await nftContract.methods.gamePot().call();
 		var activeSupply = await nftContract.methods.activeSupply().call();
@@ -907,44 +939,47 @@ async function getGameStats() {
 				38),
 				"***")
 		}
-
-		stat += '<h5 class="mb-md-3 text-center">Game Stats</h5>\n';
 		stat += '<table class="table text-white"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
 		stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td>\n';
-		stat += '<tr><td>Gem Pot: </td><td>' + gemPot + '</td>\n';
+		stat += '<tr><td>Gem Pot: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
 		stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
 		stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td></tbody></table>\n';
 
-		stat2 += '<h5 class="mb-md-3 text-center">Gem Pot Board</h5>\n';
 
 		var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
 
-		// if (getTotalHighLevelGems > 0) {
-		// 	var highestLevelGems = await nftContract.methods.highestLevelGems().call();
-		// 	for (let i = 0; i < getTotalHighLevelGems; i++) {
-		// 		var owner = await nftContract.methods.ownerOf(highestLevelGems[i
-		// 		]).call();
-		// 		//console.log(owner);
-		// 		stat2 += '<p>' + owner.replace(owner.substring(5,
-		// 			38),
-		// 			"***") + '</p>';
-		// 	}
-		// }
+		if (getTotalHighLevelGems > 0) {
+			for (let i = 0; i < getTotalHighLevelGems; i++) {
+				var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
+				var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
+				//console.log(owner);
+				stat2 += '<p>' + owner.replace(owner.substring(5,
+					38),
+					"***") + '</p>';
+			}
+		}
 		stat2 += '<button id="win" class="text-center mintButton-outline btn-sm" onclick="pickWinner()"role="button" style="justify-self: center;">Pick Winner</button>';
 
 		document.getElementById("stat1").innerHTML = stat;
 		document.getElementById("stat2").innerHTML = stat2;
 	} catch (err) {
-		console.log(err);
+		console.log("Game Stat Error\n" + err);
 	}
+	document.getElementById("loader").classList.toggle("hide-loader");
 }
-
 /* ----------------------------
 *	Owned Gem
 * ----------------------------*/
 async function getOwnedGem() {
+	sendAlert("Getting Owned Gems");
+	ownedNFts.length = 0;
 
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
+
+	var stat = document.getElementById("balance").innerHTML;
+	stat = '';
+	stat += '<p class="text-center text-white sub-title pt-5">Owned Gems: ' + bal + '</p>\n';
+	document.getElementById("balance").innerHTML = stat;
 	// console.log("balance " + bal);
 	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
 	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${testContract
@@ -978,10 +1013,14 @@ async function getOwnedGem() {
 }
 
 async function getOwnedGemTest() {
+	sendAlert("Getting Owned Gems");
+	ownedNFts.length = 0;
+
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
 	console.log("balance " + bal);
 
 	var stat = document.getElementById("balance").innerHTML;
+	stat = '';
 	stat += '<p class="text-center text-white pt-3">Owned Gems: ' + bal + '</p>\n';
 	document.getElementById("balance").innerHTML = stat;
 
@@ -1006,23 +1045,26 @@ async function getOwnedGemTest() {
 /* ----------------------------
 *	Show Image of GEM
 * ----------------------------*/
-async function showImage() {
-	// var imgData = "data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE2MCIgd2lkdGg9IjQwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYigyMTYsMCwxOSk7c3RvcC1vcGFjaXR5OjEiLyA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYigxNTUsMTcsMzApO3N0b3Atb3BhY2l0eTowIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGVsbGlwc2UgY3g9IjIwMCIgY3k9Ijg1IiByeD0iMTAwIiByeT0iNTAic3R5bGU9ImZpbGw6cmdiKDAsMCwwKTtvcGFjaXR5OjAuNSIvPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSI4MCIgcng9IjEwMCIgcnk9IjUwIiBzdHlsZT0iZmlsbDpyZ2IoMTI4LDAsMCk7c3Ryb2tlOnB1cnBsZTtzdHJva2Utd2lkdGg6MiIvPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSI4MCIgcng9IjkwIiByeT0iNTAiIHN0eWxlPSJmaWxsOnVybCgjZ3JhZGllbnQpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjgwIiByeD0iNjUiIHJ5PSIzNSIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCkiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxNDAsODAgMTIwLDEwMCIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjQiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxMjAsMTAwIDEwMCw4MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjgiLz48cG9seWdvbiBwb2ludHM9IjEyMCw2MCAxNjAsNjAgMTQwLDgwICIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjIiIC8+PHBvbHlnb24gcG9pbnRzPSIxMjAsNjAgMTM1LDQ1IDE2MCw2MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eToxIi8+PHBvbHlnb24gcG9pbnRzPSIxMzUsNDUgMTYwLDYwIDE4MCw0NSIgc3R5bGU9ImZpbGw6d2hpdGU7b3BhY2l0eTowLjIiLz48cG9seWdvbiBwb2ludHM9IjE4MCw0NSAyMDAsMzAgMjIwLDQ1IiBzdHlsZT0iZmlsbDp3aGl0ZTtvcGFjaXR5OjAuNCIvPjxwb2x5Z29uIHBvaW50cz0iMTIwLDEwMCAxNjAsMTAwIDE0MCw4MCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eToxIi8+PHBvbHlnb24gcG9pbnRzPSIxMjAsMTAwIDE2MCwxMDAgMTQwLDEyMCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjgiLz48cG9seWdvbiBwb2ludHM9IjE2MCwxMDAgMTgwLDExMCAxNDAsMTIwICAiIHN0eWxlPSJmaWxsOndoaXRlO29wYWNpdHk6MC4xIi8+PHBvbHlnb24gcG9pbnRzPSIxODAsMTEwIDIyMCwxMTAgMjAwLDEzMCIgc3R5bGU9ImZpbGw6dXJsKCNncmFkaWVudCk7b3BhY2l0eTowLjYiLz48dGV4dCB4PSIyMDAiIHk9IjcwIiBzdHlsZT0iZmlsbDpibGFjazsiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjA8dHNwYW4gdGV4dC1hbmNob3I9Im1pZGRsZSI+PC90c3Bhbj48dHNwYW4geD0iMjAwIiB5PSI5MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+MDwvdHNwYW4+PHRzcGFuIHRleHQtYW5jaG9yPSJtaWRkbGUiPjwvdHNwYW4+PC90ZXh0Pjwvc3ZnPg==";
-	var hidden = document.getElementById("myGem");
-	var gemContainer = document.getElementById("gemContainer");
+async function showImage(container, token) {
+	var gemContainer = document.getElementById("gemContainer" + container).innerHTML;
 
-	ownedNFts.forEach(element => {
-		// Create a div and add a class
-		var new_div = document.createElement("div");
-		new_div.className = "myGemImage";
-		var myGem = new_div.innerHTML;
-		myGem += '<img class="gem" src="' + element.image + '">\n';
-		myGem += '<p class="text-white">' + element.name + '</p>\n';
-		new_div.innerHTML = myGem;
-		console.log(myGem);
-		gemContainer.appendChild(new_div);
-	});
-	hidden.removeAttribute("hidden");
+	// var uri = await nftContract.methods.tokenURI(token).call();
+	// await fetch(uri)
+	// 	.then(res => res.json())
+	// 	.then(data => {
+	// 		console.log(data);
+	// 		gemContainer += '<img class="gem" src="' + data.image + '">\n';
+	// 		document.getElementById("myGemImage" + container).innerHTML = gemContainer;
+	// 	})
+	// 	.catch(err => {
+	// 		console.log("error: " + err)
+	// 		//debugAlert("getStaked() err" + err);
+	// 	});
+	gemContainer += '<div class="myGemImage">\n';
+	gemContainer += '<embed class="gem" src="svg2.html">\n';
+	gemContainer += '</div\n';
+
+	document.getElementById("gemContainer" + container).innerHTML = gemContainer;
 }
 
 /* ----------------------------
@@ -1077,6 +1119,7 @@ function preventDupes() {
 *	Dropdown menu setup
 * ----------------------------*/
 async function dropDownSetup() {
+	sendAlert("Setting Dropdown");
 	var total = ownedNFts.length;
 	//var total = 5;
 	var one = document.getElementById("dropdownMenu1");
@@ -1087,17 +1130,25 @@ async function dropDownSetup() {
 	var html2 = two.innerHTML;
 	var html3 = three.innerHTML;
 
+	//reFresh Dropdown
+	html1 = '';
+	html2 = '';
+	html3 = '';
+	document.getElementById("dropdownMenuButton1").innerHTML = '1st Gem';
+	document.getElementById("dropdownMenuButton2").innerHTML = '2nd Gem';
+	document.getElementById("dropdownMenuButton3").innerHTML = '3rd Gem';
+
 	//set up drop down text
 	for (let i = 0; i < total; i++) {
 
 		var gemStatus = await nftContract.methods.gemStatus(ownedNFts[i
 		]).call(); //get the status of gem from owned NFts
 		html1 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Level' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
+		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
 		html2 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Level' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
+		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
 		html3 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Level' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
+		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
 		// html1 += '<option class="dropdown-item">Level' + i + '</option>\n';
 		// html2 += '<option class="dropdown-item">Level' + i + '</option>\n';
 		// html3 += '<option class="dropdown-item">Level' + i + '</option>\n';
@@ -1110,24 +1161,38 @@ async function dropDownSetup() {
 	$('#dropdownMenu1 option').on('click', function () {
 		// console.log($(this).html());
 		document.getElementById("dropdownMenuButton1").innerHTML = $(this).html();
+		// var token = parseDropSelection($(this).html());
+		// showImage(1, token);
 		preventDupes();
 	});
 
 	$('#dropdownMenu2 option').on('click', function () {
 		//console.log($(this).html());
 		document.getElementById("dropdownMenuButton2").innerHTML = $(this).html();
+		// var token = parseDropSelection($(this).html());
+		// showImage(2, token);
 		preventDupes();
 	});
 
 	$('#dropdownMenu3 option').on('click', function () {
 		// console.log($(this).html());
 		document.getElementById("dropdownMenuButton3").innerHTML = $(this).html();
+		// var token = parseDropSelection($(this).html());
+		// showImage(3, token);
 		preventDupes();
 	});
+	console.log("Dropdown ready");
+}
+function sendAlert(message) {
+	var alert = document.getElementById("alert-txt").innerHTML;
+	alert = '<p class="text-white mb-0 p-small">' + message + '</p>\n';
+	document.getElementById("alert-txt").innerHTML = alert;
+	var div = document.getElementById("alert");
+	div.scrollTo = div.scrollHeight;
 }
 
 $(document).ready(function () {
-	getGameStats();
+	getDataContract();
 })
 
 $('#connectButton').click(function () {

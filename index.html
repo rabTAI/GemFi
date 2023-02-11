@@ -28,7 +28,7 @@
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link mx-3" href="#scroll">About</a></li>
+                    <li class="nav-item"><a class="nav-link mx-3 sub-title" href="#scroll">About</a></li>
                     <li class="nav-item"><a class="nav-link mx-3"><button id="connectButton"
                                 class="btn myButton-outline btn-sm rounded-pill">Connect</button></a></li>
                 </ul>
@@ -40,14 +40,24 @@
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class="row justify-content-between">
                 <div id="stat1" class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white" style="height:25rem">
+                    <h5 class="mb-md-3 sub-title text-center">Game Stats</h5>
                 </div>
-                <div class="fixed-container col-lg-3 text-center my-5">
+                <div class="fixed-container col-lg-3 text-center" style="height:25rem">
                     <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
                     <h1 class="text-white heading">GemFi</h1>
                     <p class="text-white mb-0 title">Will Rock Your Life</p>
-                    <a class="btn myButton btn-xl rounded-pill mt-5" href="#scroll">Learn More</a>
+                    <a class="btn myButton btn-xl rounded-pill mt-5 sub-title" href="#scroll">Learn More</a>
+                    <div class="justify-content-center mt-5">
+                        <div id="alert" class="alert mt-3">
+                            <p class="sub-title text-white">Alerts</p>
+                            <div id="alert-txt" class="alert-txt"></div>
+                        </div>
+                        <div id="loader" class="loader hide-loader"></div>
+                    </div>
                 </div>
-                <div id="stat2" class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center" style="height:25rem">
+                <div id="stat2" class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center"
+                    style="height:25rem">
+                    <h5 class="mb-md-3 sub-title text-center">Gem Pot Board</h5>
                 </div>
             </div>
         </div>
@@ -69,7 +79,7 @@
                         <button class="mintButton-outline btn-lg rounded-pill" onclick="mintWrapper()"
                             role="button">MINT</button>
                     </div>
-                    <div id="balance"></div>
+                    <div class="mt-5" id="balance"></div>
                 </div>
 
                 <!-- ======= Upgrade Section ======= -->
@@ -83,7 +93,6 @@
                             </button>
                             <ul class="dropdown-menu" id="dropdownMenu1">
                             </ul>
-                            <div class="gemContainer1"></div>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
@@ -92,7 +101,6 @@
                             </button>
                             <ul class="dropdown-menu" id="dropdownMenu2">
                             </ul>
-                            <div class="gemContainer2"></div>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
@@ -102,12 +110,16 @@
                             <ul class="dropdown-menu" id="dropdownMenu3">
                             </ul>
                         </div>
-                        <div class="gemContainer3"></div>
                     </div>
                     <div class="justify-content-center">
                         <p class="text-center text-white pt-3 ">Upgrade price: 0 FTM</p>
                         <button class="mintButton-outline btn-lg rounded-pill" onclick="upgradeWrapper()"
                             role="button">Upgrade</button>
+                        <div class="btn-group">
+                            <div id="gemContainer1" class="gemContainer"></div>
+                            <div id="gemContainer2" class="gemContainer"></div>
+                            <div id="gemContainer3" class="gemContainer"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,10 +144,11 @@
             <div class=" row justify-content-center ">
                 <div class="col-lg-12 px-5 py-3">
                     <h2 class="font-weight-bold text-white subheading text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
-                    <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a sprinkle of
+                    <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a
+                        sprinkle of
                         gambling concept..</h5>
 
-                    <div class="col-lg-8 mt-5 px-5 py-2 text-container">
+                    <div class="col-lg-12 mt-5 px-5 py-2 text-container">
                         <h5 class="mt-3 sub-title text-white mb-0">How to play?</h5>
                         <p></p>
                         <li class="text-white">Mint 3 Gem starting with level 1</li>
