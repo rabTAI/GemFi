@@ -22,10 +22,9 @@
 .bg-image-full {
     background-image: url(../assets/img/gemBG.jpg);
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
     background-size: cover;
     background-attachment: fixed;
-    min-height: 300px;
     width: 100%;
 }
 
@@ -61,6 +60,15 @@
 .p-small {
     font-size: 12px;
 }
+
+tbody{
+    border-bottom: 20px solid transparent;
+} 
+
+td{
+
+}
+
 /*
 * Welcome
 */
@@ -76,6 +84,7 @@
     left: 0;
     right: 0;
     text-align: center;
+    height: 25rem;
 }
 
 .alert{
@@ -98,18 +107,16 @@
     background: transparent;
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
     border-radius: 20px;
+    height: 25rem;
     /* border: 2px solid rgb(0, 72, 197); */
-    overflow-y: scroll;
-    max-height: 90%;
 }
 
 .stat-container2 {
     background: transparent;
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
     border-radius: 20px;
+    height: 25rem;
     /* border: 2px solid rgb(0, 72, 197); */
-    overflow-y: scroll;
-    max-height: 90%;
 }
 
 @media screen and (max-width: 991px) {
@@ -118,6 +125,25 @@
         margin-bottom: 30px;
     }
 }
+
+.stats1{
+    overflow-y: scroll;
+    height: 17rem;
+}
+.stats2{
+    overflow-y: scroll;
+    height: 15rem;
+}
+
+.pickWinner{
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
 .text-container {
     background-color: rgb(0, 0, 0, 0.3);
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);

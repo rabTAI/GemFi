@@ -1021,6 +1021,9 @@ async function getTokenId(tx) {
 			}
 		});
 
+	if (newMints.length != 0) {
+		sendAlertPerm("Last Minted token" + Arrays.toString(newMints));
+	}
 	// if (confirm("Mint was successful. New minted NFTs Token: " + newMints[0] + ", " + newMints[1] + ", " + newMints[2])) {
 	// 	location.reload();
 	// } else {
@@ -1042,11 +1045,16 @@ async function upgradeSuccessOrNot(tx) {
 			success = events.returnValues.trueOrFalse;
 			if (success == true) {
 				tokenUpgraded = events.returnValues.getId;
+
+				sendAlertPerm("Success: Upgraded Gem #" + tokenUpgraded);
+
 				// if (confirm("Upgrade was successful. New minted NFT: " + tokenUpgraded)) {
 				// 	location.reload();
 				// }
 				// else {
 				// 	location.reload();
+			} else {
+				sendAlertPerm("Last Upgrade failed");
 			}
 		});
 	return tokenUpgraded;
@@ -1060,7 +1068,6 @@ async function mint(mintAmount) {
 	// console.log(mintPrice);
 
 	var totalPrice = mintPrice * mintAmount;
-	var minted = [];
 
 	await nftContract.methods.mint(mintAmount).send({
 		from: currentAddr,
@@ -1069,13 +1076,14 @@ async function mint(mintAmount) {
 		if (!error) {
 			console.log("Transaction sent!", hash);
 			const interval = setInterval(function () {
+				sendAlertPerm("Getting mint status...");
 				console.log("Attempting to get transaction receipt...");
 				web3.eth.getTransactionReceipt(hash, function (err, rec) {
 					if (rec) {
 						if (rec.status == true) {
 							console.log(rec);
 							try {
-								minted = getTokenId(rec);
+								getTokenId(rec);
 							} catch (error) {
 								console.log(error);
 							}
@@ -1090,16 +1098,13 @@ async function mint(mintAmount) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	if (minted.length != 0) {
-		sendAlert("New Minted token" + Arrays.toString(minted));
-		reloadStats();
-	}
+
+	reloadStats();
 }
 /* ----------------------------
 *	Upgrade
 * ----------------------------*/
 async function upgrade(gem1, gem2, gem3) {
-	var token = 0;
 
 	await nftContract.methods.upgradeGems(gem1, gem2, gem3).send({
 		from: currentAddr,
@@ -1109,12 +1114,14 @@ async function upgrade(gem1, gem2, gem3) {
 			console.log("Transaction sent!", hash);
 			const interval = setInterval(function () {
 				console.log("Attempting to get transaction receipt...");
+				sendAlertPerm("Getting upgrade status...");
+
 				web3.eth.getTransactionReceipt(hash, function (err, rec) {
 					if (rec) {
 						if (rec.status == true) {
 							console.log(rec);
 							try {
-								token = upgradeSuccessOrNot(rec);
+								upgradeSuccessOrNot(rec);
 							} catch (error) {
 								console.log(error);
 							}
@@ -1128,15 +1135,37 @@ async function upgrade(gem1, gem2, gem3) {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
-	if (token != 0) {
-		sendAlert("Upgraded NFT: " + token);
-		reloadStats();
-	}
-	else {
-		sendAlert("Upgrade failed");
-		reloadStats();
-	}
+	reloadStats();
 	// location.reload();
+}
+/* ----------------------------
+*	Withdraw
+* ----------------------------*/
+async function withdrawBalance(token) {
+
+	await nftContract.methods.withdrawBalance(token).send({
+		from: currentAddr,
+		value: 0
+	}, function (error, hash) {
+		if (!error) {
+			console.log("Transaction sent!", hash);
+			const interval = setInterval(function () {
+				console.log("Attempting to get transaction receipt...");
+				web3.eth.getTransactionReceipt(hash, function (err, rec) {
+					if (rec) {
+						if (rec.status == true) {
+							console.log(rec);
+							sendAlert("Withdraw successful")
+						}
+						clearInterval(interval);
+					}
+				});
+			},
+				1000);
+		} else {
+			console.log("Something went wrong while submitting your transaction:", error);
+		}
+	});
 }
 
 /* ----------------------------
@@ -1173,6 +1202,9 @@ async function upgradeWrapper() {
 	}
 }
 
+/* ----------------------------
+*	Withdraw wrapper
+* ----------------------------*/
 async function withdrawWrapper() {
 	var gem = document.getElementById("dropdownMenuButtonWithdraw").textContent;
 	var token = parseDropSelection(gem, '#', ' :Lvl');
@@ -1212,35 +1244,46 @@ async function pickWinner() {
 	}
 }
 
-/* ----------------------------
-*	Game Stats
-* ----------------------------*/
-async function getDataContract() {
-	try {
-		await loadWeb3();
-		await reloadStats();
-	} catch (e) {
-		console.log("Load Contract Error\n" + e);
-	}
+async function contractCreationTime() {
+	var blockNumber, time, date;
+
+	hash = '0x5a30d61a790bbd8c92d20ee1c14e5528a9c59308aa4a7cad6b8d7b74e5f4ffd0'; // from create ftm-scan
+
+	await web3.eth.getTransactionReceipt(hash, function (err, rec) {
+		if (rec) {
+			blockNumber = rec.blockNumber;
+		}
+	});
+	time = await web3.eth.getBlock(blockNumber);
+
+	return time.timestamp;
 }
 
 async function reloadStats() {
 	if (nftContract) {
-		sendAlert("...Updating data...");
+		sendAlert("...Updating...Updating...");
 		document.getElementById("loader").classList.toggle("hide-loader");
 
 		try {
-			sendAlert("Getting GEM Stats");
 			var stat = document.getElementById("stat1").innerHTML;
-			stat = '<h5 class="mb-md-5 title text-center">Game Stats</h5>\n';
 			var stat2 = document.getElementById("stat2").innerHTML;
-			stat2 = '<h5 class="mb-md-5 title text-center">Gem Pot Board</h5>\n';
+			stat = '';
+			stat2 = '';
 
 			var gemPot = await nftContract.methods.gamePot().call();
 			var activeSupply = await nftContract.methods.activeSupply().call();
 			var highestLevel = await nftContract.methods.highestGemLevel().call();
 			var lastDraw = await nftContract.methods.lastDraw().call();
-			let lastDrawDate = new Date(lastDraw * 1000).toLocaleString('en-GB');
+			var create = await contractCreationTime();
+
+			let lastDrawDate;
+			if (lastDraw == create) {
+				lastDrawDate = 'None';
+			}
+			else {
+				lastDrawDate = new Date(lastDraw * 1000).toLocaleString('en-GB');
+			}
+
 			var lastWinner = await nftContract.methods.lastWinner().call();
 			//console.log(lastWinner);
 			var lastWinnerAdd;
@@ -1254,8 +1297,8 @@ async function reloadStats() {
 					"***")
 			}
 			stat += '<table class="table text-white"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
-			stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td>\n';
-			stat += '<tr><td>Gem Pot: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
+			stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td></tbody>\n';
+			stat += '<tbody><tr><td>Gem Pot Balance: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
 			stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
 			stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td></tbody></table>\n';
 
@@ -1263,17 +1306,23 @@ async function reloadStats() {
 			var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
 
 			if (getTotalHighLevelGems > 0) {
+				document.getElementById("win").removeAttribute("hidden");
+				document.getElementById("win").setAttribute('disabled', false);
+
 				for (let i = 0; i < getTotalHighLevelGems; i++) {
 					var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
-					var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
-					//console.log(owner);
-					stat2 += '<p>' + owner.replace(owner.substring(5,
-						38),
-						"***") + '</p>';
+					// var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
+					// //console.log(owner);
+					// stat2 += '<p>' + owner.replace(owner.substring(5,
+					// 	38),
+					// 	"***") + '</p>';
+					// var status = await nftContract.methods.gemStatus(highestLevelGems);
+					stat2 += '<p>Gem #' + highestLevelGems + '</p\n'
 				}
+			} else {
+				stat2 += 'Not ready yet!';
+				document.getElementById("win").setAttribute('disabled', true);
 			}
-			stat2 += '<button id="win" class="text-center mintButton-outline btn-sm" onclick="pickWinner()"role="button" style="justify-self: center;">Pick Winner</button>';
-
 			document.getElementById("stat1").innerHTML = stat;
 			document.getElementById("stat2").innerHTML = stat2;
 		} catch (err) {
@@ -1283,13 +1332,14 @@ async function reloadStats() {
 		await dropDownSetup();
 
 		document.getElementById("loader").classList.toggle("hide-loader");
+		sendAlert("");
 	}
 }
 /* ----------------------------
 *	Owned Gem
 * ----------------------------*/
 async function getOwnedGem() {
-	sendAlert("Getting Owned Gems");
+	// sendAlert("Getting Owned Gems");
 	ownedNFts.length = 0;
 
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
@@ -1331,7 +1381,7 @@ async function getOwnedGem() {
 }
 
 async function getOwnedGemTest() {
-	sendAlert("Getting Owned Gems");
+	// sendAlert("Getting Owned Gems");
 	ownedNFts.length = 0;
 
 	var bal = await nftContract.methods.balanceOf(currentAddr).call();
@@ -1384,7 +1434,17 @@ async function showImage(container, token) {
 
 	document.getElementById("gemContainer" + container).innerHTML = gemContainer;
 }
-
+/* ----------------------------
+*	Game Stats
+* ----------------------------*/
+async function getDataContract() {
+	try {
+		await loadWeb3();
+		await reloadStats();
+	} catch (e) {
+		console.log("Load Contract Error\n" + e);
+	}
+}
 /* ----------------------------
 *	Prevent duplicate in dropdown
 * ----------------------------*/
@@ -1437,7 +1497,7 @@ function preventDupes() {
 *	Dropdown menu setup
 * ----------------------------*/
 async function dropDownSetup() {
-	sendAlert("Setting Dropdown");
+	// sendAlert("Setting Dropdown");
 	var total = ownedNFts.length;
 	//var total = 5;
 	var one = document.getElementById("dropdownMenu1");
@@ -1458,8 +1518,8 @@ async function dropDownSetup() {
 		var gemStatus = await nftContract.methods.gemStatus(ownedNFts[i
 		]).call(); //get the status of gem from owned NFts
 
-		htmlWD += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ' :Lvl' + gemStatus.level + ' :Bal' + gemStatus.level + '</option>\n';
+		htmlWD += '<option class="dropdown-item">Gem #' + ownedNFts[i
+		] + ' :Lvl ' + gemStatus.level + ' :Bal ' + gemStatus.balance / 1e18 + '</option>\n';
 	}
 	one.innerHTML = htmlWD;
 	two.innerHTML = htmlWD;
@@ -1499,10 +1559,13 @@ async function dropDownSetup() {
 }
 function sendAlert(message) {
 	var alert = document.getElementById("alert-txt").innerHTML;
-	alert = '<p class="text-white mb-0 p-small">' + message + '</p>\n';
+	alert = message;
 	document.getElementById("alert-txt").innerHTML = alert;
-	var div = document.getElementById("alert");
-	div.scrollTo = div.scrollHeight;
+}
+function sendAlertPerm(message) {
+	var alert = document.getElementById("alert-perm").innerHTML;
+	alert = message;
+	document.getElementById("alert-perm").innerHTML = alert;
 }
 
 $(document).ready(function () {

@@ -37,13 +37,14 @@
         </div>
     </nav>
     <!-- Header - Welcome Container-->
-    <section id="stats" class="py-3 welcome-container">
+    <section class="py-3 welcome-container">
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class="row justify-content-between">
-                <div id="stat1" class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white" style="height:25rem">
-                    <h5 class="mb-md-5 title text-center">Game Stats</h5>
+                <div class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white">
+                    <h5 class="mb-5 title text-center">Game Stats</h5>
+                    <div id="stat1" class="stats1"></div>
                 </div>
-                <div class="fixed-container col-lg-3 text-center" style="height:25rem">
+                <div class="fixed-container col-lg-3 text-center">
                     <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
                     <h1 class="text-white heading">GemFi</h1>
                     <p class="text-white mb-0 title">Will Rock Your Life</p>
@@ -51,14 +52,20 @@
                     <div class="justify-content-center mt-5">
                         <div id="alert" class="alert mt-3">
                             <p class="sub-title text-white">Alerts</p>
-                            <div id="alert-txt" class="alert-txt"></div>
+                            <p id="alert-perm" class="text-white mb-0 p-small">
+                            <p>
+                            <p id="alert-txt" class="text-white mb-0 p-small"></p>
                         </div>
                         <div id="loader" class="loader hide-loader"></div>
                     </div>
                 </div>
-                <div id="stat2" class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center"
-                    style="height:25rem">
-                    <h5 class="mb-md-5 title text-center">Gem Pot Board</h5>
+                <div class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center">
+                    <h5 class="mb-5 title text-center">Gem Pot Board</h5>
+                    <div id="stat2" class="stats2 pb-5 mb-3"></div>
+                    <div class="pickWinner text-center mt-3 mb-3">
+                        <button id="win" hidden class="mintButton-outline btn-sm" onclick="pickWinner()" role="button">Pick
+                            Winner</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -69,40 +76,43 @@
             <div class="row justify-content-between">
                 <!-- ======= Mint Section ======= -->
                 <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-                    
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-3 mb-md-5">Mint GEM</h3>
+
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-5">Mint GEM</h3>
                     <div class="input-group justify-content-center">
                         <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
                         <input type="number" id="input" value="3" placeholder="3" readonly>
                         <button id="increment"><i class="fas fa-plus fa-xs"></i></button>
                     </div>
                     <div class="justify-content-center">
-                        <p class="text-center text-white pt-3">Mint price: 1 FTM to NFT balance</p>
+                        <p class="text-center text-white pt-3">Mint price: 1 FTM => Gem Balance</p>
                         <button class="mintButton-outline btn-lg rounded-pill mb-3" onclick="mintWrapper()"
                             role="button">MINT</button>
                     </div>
 
                     <!-- Withdraw -->
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-3">Withdraw 
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-3">Withdraw
                         <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
                             <a style="pointer-events: none;" href="">
-                            <i class="bi bi-info-square info"></i></a></span></h3>
+                                <i class="bi bi-info-square info"></i></a></span>
+                    </h3>
                     <div id="withdrawBalance" class="withdrawBalance btn-group">
                         <div class="dropdown btn-group">
-                            <button class="btn btn-light dropdown-toggle" style="width: 50%;" type="button" id="dropdownMenuButtonWithdraw"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button class="btn btn-light dropdown-toggle" style="width: 50%;" type="button"
+                                id="dropdownMenuButtonWithdraw" data-bs-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
                                 Select a GEM
                             </button>
                             <ul class="dropdown-menu" id="dropdownWithdraw">
                             </ul>
                         </div>
-                        <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()" role="button">GO</button>
+                        <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()"
+                            role="button">GO</button>
                     </div>
                 </div>
 
                 <!-- ======= Upgrade Section ======= -->
                 <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-                    <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-3 mb-md-5">Upgrade GEM</h3>
+                    <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-5">Upgrade GEM</h3>
 
                     <div class="selectGems">
                         <div class="button-group">
@@ -134,10 +144,10 @@
                     </div>
                     <div class="justify-content-center">
                         <p class="text-center text-white ">Upgrade price: 0 FTM</p>
-                
+
                         <button class="mintButton-outline btn-lg rounded-pill mb-2" onclick="upgradeWrapper()"
                             role="button">Upgrade</button>
-    
+
                         <div class="" id="balance"></div>
                     </div>
                 </div>
@@ -188,11 +198,13 @@
                                 Gem Pot Board</li>
                         </p>
                         <p class="mt-0">
-                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked randomly from Gem Pot
+                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked randomly from Gem
+                                Pot
                                 Board</li>
                         </p>
                         <p class="mt-0">
-                            <li class="text-white" style="padding-left:50px;">Any user can call the pickWinner function every 24hr.</li>
+                            <li class="text-white" style="padding-left:50px;">Any eligible user from leader board can call the pickWinner function
+                                every 24hr.</li>
                         </p>
 
                     </div>
