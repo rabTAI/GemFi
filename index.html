@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap" rel="stylesheet">
 
     <!-- Core theme CSS (includes Bootstrap)-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link href="./css/styles.css" rel="stylesheet" />
     <link href="./css/myStyles.css" rel="stylesheet" />
 </head>
@@ -22,7 +23,7 @@
     <!-- Responsive navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark bg-Blue">
         <div class="container">
-            <a class="navbar-brand logo" href="index.html">GemFI</a>
+            <a class="navbar-brand logo" href="index.html">GemFi</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -40,7 +41,7 @@
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class="row justify-content-between">
                 <div id="stat1" class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white" style="height:25rem">
-                    <h5 class="mb-md-3 sub-title text-center">Game Stats</h5>
+                    <h5 class="mb-md-5 title text-center">Game Stats</h5>
                 </div>
                 <div class="fixed-container col-lg-3 text-center" style="height:25rem">
                     <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
@@ -57,7 +58,7 @@
                 </div>
                 <div id="stat2" class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center"
                     style="height:25rem">
-                    <h5 class="mb-md-3 sub-title text-center">Gem Pot Board</h5>
+                    <h5 class="mb-md-5 title text-center">Gem Pot Board</h5>
                 </div>
             </div>
         </div>
@@ -68,58 +69,76 @@
             <div class="row justify-content-between">
                 <!-- ======= Mint Section ======= -->
                 <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mb-3 mb-md-5">Mint GEM</h3>
+                    
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-3 mb-md-5">Mint GEM</h3>
                     <div class="input-group justify-content-center">
                         <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
                         <input type="number" id="input" value="3" placeholder="3" readonly>
                         <button id="increment"><i class="fas fa-plus fa-xs"></i></button>
                     </div>
                     <div class="justify-content-center">
-                        <p class="text-center text-white pt-3">Mint price: 1 FTM each towards NFT balance</p>
-                        <button class="mintButton-outline btn-lg rounded-pill" onclick="mintWrapper()"
+                        <p class="text-center text-white pt-3">Mint price: 1 FTM to NFT balance</p>
+                        <button class="mintButton-outline btn-lg rounded-pill mb-3" onclick="mintWrapper()"
                             role="button">MINT</button>
                     </div>
-                    <div class="mt-5" id="balance"></div>
+
+                    <!-- Withdraw -->
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-3">Withdraw 
+                        <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
+                            <a style="pointer-events: none;" href="">
+                            <i class="bi bi-info-square info"></i></a></span></h3>
+                    <div id="withdrawBalance" class="withdrawBalance btn-group">
+                        <div class="dropdown btn-group">
+                            <button class="btn btn-light dropdown-toggle" style="width: 50%;" type="button" id="dropdownMenuButtonWithdraw"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Select a GEM
+                            </button>
+                            <ul class="dropdown-menu" id="dropdownWithdraw">
+                            </ul>
+                        </div>
+                        <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()" role="button">GO</button>
+                    </div>
                 </div>
 
                 <!-- ======= Upgrade Section ======= -->
                 <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-                    <h3 class="font-weight-bold title text-white p-0 m-0 mb-3 mb-md-5">Upgrade GEM</h3>
-                    <div class="btn-group">
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                1st Gem
-                            </button>
-                            <ul class="dropdown-menu" id="dropdownMenu1">
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                2nd Gem
-                            </button>
-                            <ul class="dropdown-menu" id="dropdownMenu2">
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                3rd Gem
-                            </button>
-                            <ul class="dropdown-menu" id="dropdownMenu3">
-                            </ul>
+                    <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-3 mb-md-5">Upgrade GEM</h3>
+
+                    <div class="selectGems">
+                        <div class="button-group">
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    1st Gem
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownMenu1">
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    2nd Gem
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownMenu2">
+                                </ul>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    3rd Gem
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownMenu3">
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="justify-content-center">
-                        <p class="text-center text-white pt-3 ">Upgrade price: 0 FTM</p>
-                        <button class="mintButton-outline btn-lg rounded-pill" onclick="upgradeWrapper()"
+                        <p class="text-center text-white ">Upgrade price: 0 FTM</p>
+                
+                        <button class="mintButton-outline btn-lg rounded-pill mb-2" onclick="upgradeWrapper()"
                             role="button">Upgrade</button>
-                        <div class="btn-group">
-                            <div id="gemContainer1" class="gemContainer"></div>
-                            <div id="gemContainer2" class="gemContainer"></div>
-                            <div id="gemContainer3" class="gemContainer"></div>
-                        </div>
+    
+                        <div class="" id="balance"></div>
                     </div>
                 </div>
             </div>
@@ -145,8 +164,7 @@
                 <div class="col-lg-12 px-5 py-3">
                     <h2 class="font-weight-bold text-white subheading text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
                     <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a
-                        sprinkle of
-                        gambling concept..</h5>
+                        chance of winning the POT money</h5>
 
                     <div class="col-lg-12 mt-5 px-5 py-2 text-container">
                         <h5 class="mt-3 sub-title text-white mb-0">How to play?</h5>
@@ -170,8 +188,11 @@
                                 Gem Pot Board</li>
                         </p>
                         <p class="mt-0">
-                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked from Gem Pot
+                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked randomly from Gem Pot
                                 Board</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Any user can call the pickWinner function every 24hr.</li>
                         </p>
 
                     </div>

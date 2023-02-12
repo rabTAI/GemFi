@@ -1,6 +1,313 @@
-// const contAddress = "0x19F4e328f9f78238ADc3b772b8f8891E1475b0bc"; //Test FTM net 1
-const contAddress = "0xb461627bff821a246E50F12C5026abB10bD3b1e3"; //Test FTM net 2
-
+// const contAbi = [
+// 	{ inputs: [], stateMutability: "nonpayable", type: "constructor" },
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: "address",
+// 				name: "owner",
+// 				type: "address",
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: "address",
+// 				name: "approved",
+// 				type: "address",
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: "uint256",
+// 				name: "tokenId",
+// 				type: "uint256",
+// 			},
+// 		],
+// 		name: "Approval",
+// 		type: "event",
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: "address",
+// 				name: "owner",
+// 				type: "address",
+// 			},
+// 			{
+// 				indexed: true,
+// 				internalType: "address",
+// 				name: "operator",
+// 				type: "address",
+// 			},
+// 			{ indexed: false, internalType: "bool", name: "approved", type: "bool" },
+// 		],
+// 		name: "ApprovalForAll",
+// 		type: "event",
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{
+// 				indexed: true,
+// 				internalType: "bool",
+// 				name: "trueOrFalse",
+// 				type: "bool",
+// 			},
+// 		],
+// 		name: "GemUpgrade",
+// 		type: "event",
+// 	},
+// 	{
+// 		anonymous: false,
+// 		inputs: [
+// 			{ indexed: true, internalType: "address", name: "from", type: "address" },
+// 			{ indexed: true, internalType: "address", name: "to", type: "address" },
+// 			{
+// 				indexed: true,
+// 				internalType: "uint256",
+// 				name: "tokenId",
+// 				type: "uint256",
+// 			},
+// 		],
+// 		name: "Transfer",
+// 		type: "event",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "RANDOM",
+// 		outputs: [{ internalType: "address", name: "", type: "address" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "activeSupply",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "to", type: "address" },
+// 			{ internalType: "uint256", name: "tokenId", type: "uint256" },
+// 		],
+// 		name: "approve",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "address", name: "owner", type: "address" }],
+// 		name: "balanceOf",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "collectedFee",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "gamePot",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "_gemId", type: "uint256" }],
+// 		name: "gemStatus",
+// 		outputs: [
+// 			{ internalType: "uint256", name: "level", type: "uint256" },
+// 			{ internalType: "uint256", name: "balance", type: "uint256" },
+// 		],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+// 		name: "getApproved",
+// 		outputs: [{ internalType: "address", name: "", type: "address" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "getTotalHighLevelGems",
+// 		outputs: [
+// 			{ internalType: "uint256", name: "totalHighLevelGems", type: "uint256" },
+// 		],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "highestGemLevel",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		name: "highestLevelGems",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "owner", type: "address" },
+// 			{ internalType: "address", name: "operator", type: "address" },
+// 		],
+// 		name: "isApprovedForAll",
+// 		outputs: [{ internalType: "bool", name: "", type: "bool" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "lastDraw",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "lastWinner",
+// 		outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint8", name: "_mintAmount", type: "uint8" }],
+// 		name: "mint",
+// 		outputs: [],
+// 		stateMutability: "payable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "name",
+// 		outputs: [{ internalType: "string", name: "", type: "string" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "owner",
+// 		outputs: [{ internalType: "address", name: "", type: "address" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
+// 		name: "ownerOf",
+// 		outputs: [{ internalType: "address", name: "", type: "address" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "pickWinner",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "from", type: "address" },
+// 			{ internalType: "address", name: "to", type: "address" },
+// 			{ internalType: "uint256", name: "tokenId", type: "uint256" },
+// 		],
+// 		name: "safeTransferFrom",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "from", type: "address" },
+// 			{ internalType: "address", name: "to", type: "address" },
+// 			{ internalType: "uint256", name: "tokenId", type: "uint256" },
+// 			{ internalType: "bytes", name: "data", type: "bytes" },
+// 		],
+// 		name: "safeTransferFrom",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "operator", type: "address" },
+// 			{ internalType: "bool", name: "approved", type: "bool" },
+// 		],
+// 		name: "setApprovalForAll",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "bytes4", name: "interfaceId", type: "bytes4" }],
+// 		name: "supportsInterface",
+// 		outputs: [{ internalType: "bool", name: "", type: "bool" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "symbol",
+// 		outputs: [{ internalType: "string", name: "", type: "string" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "_gemId", type: "uint256" }],
+// 		name: "tokenURI",
+// 		outputs: [{ internalType: "string", name: "", type: "string" }],
+// 		stateMutability: "view",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "address", name: "from", type: "address" },
+// 			{ internalType: "address", name: "to", type: "address" },
+// 			{ internalType: "uint256", name: "tokenId", type: "uint256" },
+// 		],
+// 		name: "transferFrom",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [
+// 			{ internalType: "uint256", name: "_gemOne", type: "uint256" },
+// 			{ internalType: "uint256", name: "_gemTwo", type: "uint256" },
+// 			{ internalType: "uint256", name: "_gemThree", type: "uint256" },
+// 		],
+// 		name: "upgradeGems",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [{ internalType: "uint256", name: "_gemId", type: "uint256" }],
+// 		name: "withdrawBalance",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// 	{
+// 		inputs: [],
+// 		name: "withdrawFee",
+// 		outputs: [],
+// 		stateMutability: "nonpayable",
+// 		type: "function",
+// 	},
+// ];
 const contAbi = [
 	{
 		"inputs": [],
@@ -622,19 +929,23 @@ const contAbi = [
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-]
+] // test 2
+
+// const contAddress = "0x19F4e328f9f78238ADc3b772b8f8891E1475b0bc"; //Test FTM net 1
+const contAddress = "0xb461627bff821a246E50F12C5026abB10bD3b1e3"; //Test FTM net 2
 
 var nftContract;
 var currentAddr;
 var web3;
 var ownedNFts = [];
-var testContract = "0x41f3532B4667b3A4a526EeA0c4103e486c5053e7"; //FAM reward card
+// var testContract = "0x41f3532B4667b3A4a526EeA0c4103e486c5053e7"; //FAM reward card
 
 /* ----------------------------
 *	Connect
 * ----------------------------*/
 async function connect() {
 	console.log('Connecting to wallet...')
+	$('#connectButton').attr('disabled', false);
 	try {
 		var accounts = await ethereum.request({
 			method: 'eth_requestAccounts'
@@ -643,13 +954,8 @@ async function connect() {
 			console.log('Please connect to Wallet.');
 			$('#connectButton').html('Connect wallet')
 		} else {
-			if (accounts[
-				0
-			] !== currentAddr) {
-				currentAddr = accounts[
-					0
-				];
-				$('#connectButton').attr('disabled', true)
+			if (accounts[0] !== currentAddr) {
+				currentAddr = accounts[0];
 			}
 			if (currentAddr !== null) {
 				console.log('Wallet connected = ' + currentAddr)
@@ -657,6 +963,7 @@ async function connect() {
 					38),
 					"***")
 				$('#connectButton').html(shortenedAccount)
+				$('#connectButton').attr('disabled', true)
 			}
 		}
 	} catch (err) {
@@ -667,7 +974,6 @@ async function connect() {
 		} else {
 			console.error(err);
 		}
-		$('#connectButton').attr('disabled', false)
 	}
 }
 
@@ -681,10 +987,11 @@ async function loadWeb3() {
 		var chainID = await web3.eth.net.getId();
 		console.log('Connected to chain ' + chainID)
 
-		await loadContracts();
-		$('#connectButton').attr('disabled', false)
-		if (window.ethereum.selectedAddress !== null) {
+		if (chainID == 0xfa2) { //main 250, test 0xfa2
+			await loadContracts();
 			await connect();
+		} else {
+			alert('Please switch to Fantom Opera in your wallet');
 		}
 	} else {
 		$('#connectButton').attr('disabled', true)
@@ -844,18 +1151,19 @@ async function mintWrapper() {
 *	Upgrade wrapper
 * ----------------------------*/
 async function upgradeWrapper() {
-	var gem1 = document.getElementById("dropdownMenuButton1").textContent.split('Lvl').pop();
-	var gem2 = document.getElementById("dropdownMenuButton2").textContent.split('Lvl').pop();
-	var gem3 = document.getElementById("dropdownMenuButton3").textContent.split('Lvl').pop();
+	var t1 = document.getElementById("dropdownMenuButton1").textContent;
+	var t2 = document.getElementById("dropdownMenuButton2").textContent;
+	var t3 = document.getElementById("dropdownMenuButton3").textContent;
+
+	var gem1 = parseDropSelection(t1, ':Lvl', ':Bal');
+	var gem2 = parseDropSelection(t2, ':Lvl', ':Bal');
+	var gem3 = parseDropSelection(t3, ':Lvl', ':Bal');
 
 	if (gem1 == gem2 && gem2 == gem3) {
 		//console.log("3 gems are same level");
-		var t1 = document.getElementById("dropdownMenuButton1").textContent
-		var token1 = parseDropSelection(t1);
-		var t2 = document.getElementById("dropdownMenuButton2").textContent
-		var token2 = parseDropSelection(t2);
-		var t3 = document.getElementById("dropdownMenuButton3").textContent
-		var token3 = parseDropSelection(t3);
+		var token1 = parseDropSelection(t1, '#', ' :Lvl');
+		var token2 = parseDropSelection(t2, '#', ' :Lvl');
+		var token3 = parseDropSelection(t3, '#', ' :Lvl');
 
 		console.log(token1, token2, token3);
 		upgrade(token1, token2, token3);
@@ -865,8 +1173,16 @@ async function upgradeWrapper() {
 	}
 }
 
-function parseDropSelection(text) {
-	var token = text.slice(text.indexOf('#') + 1, text.lastIndexOf(':'));
+async function withdrawWrapper() {
+	var gem = document.getElementById("dropdownMenuButtonWithdraw").textContent;
+	var token = parseDropSelection(gem, '#', ' :Lvl');
+	console.log(token);
+	withdrawBalance(token);
+}
+
+function parseDropSelection(text, a, b) {
+	// var token = text.slice(text.indexOf('#') + 1, text.lastIndexOf(':Lvl'));
+	var token = text.slice(text.indexOf(a) + 1, text.lastIndexOf(b));
 	return token;
 }
 
@@ -909,63 +1225,65 @@ async function getDataContract() {
 }
 
 async function reloadStats() {
-	sendAlert("...Updating data...");
-	document.getElementById("loader").classList.toggle("hide-loader");
+	if (nftContract) {
+		sendAlert("...Updating data...");
+		document.getElementById("loader").classList.toggle("hide-loader");
 
-	await getOwnedGemTest();
-	await dropDownSetup();
+		try {
+			sendAlert("Getting GEM Stats");
+			var stat = document.getElementById("stat1").innerHTML;
+			stat = '<h5 class="mb-md-5 title text-center">Game Stats</h5>\n';
+			var stat2 = document.getElementById("stat2").innerHTML;
+			stat2 = '<h5 class="mb-md-5 title text-center">Gem Pot Board</h5>\n';
 
-	try {
-		sendAlert("Getting Game Stats");
-		var stat = document.getElementById("stat1").innerHTML;
-		stat = '<h5 class="mb-md-3 sub-title text-center">Game Stats</h5>\n';
-		var stat2 = document.getElementById("stat2").innerHTML;
-		stat2 = '<h5 class="mb-md-3 sub-title text-center">Gem Pot Board</h5>\n';
-
-		var gemPot = await nftContract.methods.gamePot().call();
-		var activeSupply = await nftContract.methods.activeSupply().call();
-		var highestLevel = await nftContract.methods.highestGemLevel().call();
-		var lastDraw = await nftContract.methods.lastDraw().call();
-		let lastDrawDate = new Date(lastDraw * 1000).toLocaleString('en-GB');
-		var lastWinner = await nftContract.methods.lastWinner().call();
-		//console.log(lastWinner);
-		var lastWinnerAdd;
-		if (lastWinner == 0) {
-			lastWinnerAdd = 'None';
-		}
-		else {
-			lastWinnerAdd = await nftContract.methods.ownerOf(lastWinner).call();
-			lastWinnerAdd = lastWinnerAdd.replace(lastWinnerAdd.substring(5,
-				38),
-				"***")
-		}
-		stat += '<table class="table text-white"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
-		stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td>\n';
-		stat += '<tr><td>Gem Pot: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
-		stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
-		stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td></tbody></table>\n';
-
-
-		var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
-
-		if (getTotalHighLevelGems > 0) {
-			for (let i = 0; i < getTotalHighLevelGems; i++) {
-				var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
-				var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
-				//console.log(owner);
-				stat2 += '<p>' + owner.replace(owner.substring(5,
-					38),
-					"***") + '</p>';
+			var gemPot = await nftContract.methods.gamePot().call();
+			var activeSupply = await nftContract.methods.activeSupply().call();
+			var highestLevel = await nftContract.methods.highestGemLevel().call();
+			var lastDraw = await nftContract.methods.lastDraw().call();
+			let lastDrawDate = new Date(lastDraw * 1000).toLocaleString('en-GB');
+			var lastWinner = await nftContract.methods.lastWinner().call();
+			//console.log(lastWinner);
+			var lastWinnerAdd;
+			if (lastWinner == 0) {
+				lastWinnerAdd = 'None';
 			}
-		}
-		stat2 += '<button id="win" class="text-center mintButton-outline btn-sm" onclick="pickWinner()"role="button" style="justify-self: center;">Pick Winner</button>';
+			else {
+				lastWinnerAdd = await nftContract.methods.ownerOf(lastWinner).call();
+				lastWinnerAdd = lastWinnerAdd.replace(lastWinnerAdd.substring(5,
+					38),
+					"***")
+			}
+			stat += '<table class="table text-white"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
+			stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td>\n';
+			stat += '<tr><td>Gem Pot: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
+			stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
+			stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td></tbody></table>\n';
 
-		document.getElementById("stat1").innerHTML = stat;
-		document.getElementById("stat2").innerHTML = stat2;
-	} catch (err) {
-		console.log("Game Stat Error\n" + err);
+
+			var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
+
+			if (getTotalHighLevelGems > 0) {
+				for (let i = 0; i < getTotalHighLevelGems; i++) {
+					var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
+					var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
+					//console.log(owner);
+					stat2 += '<p>' + owner.replace(owner.substring(5,
+						38),
+						"***") + '</p>';
+				}
+			}
+			stat2 += '<button id="win" class="text-center mintButton-outline btn-sm" onclick="pickWinner()"role="button" style="justify-self: center;">Pick Winner</button>';
+
+			document.getElementById("stat1").innerHTML = stat;
+			document.getElementById("stat2").innerHTML = stat2;
+		} catch (err) {
+			console.log("Game Stat Error\n" + err);
+		}
+		await getOwnedGemTest();
+		await dropDownSetup();
+
+		document.getElementById("loader").classList.toggle("hide-loader");
 	}
-	document.getElementById("loader").classList.toggle("hide-loader");
 }
 /* ----------------------------
 *	Owned Gem
@@ -982,7 +1300,7 @@ async function getOwnedGem() {
 	document.getElementById("balance").innerHTML = stat;
 	// console.log("balance " + bal);
 	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
-	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${testContract
+	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${contAddress
 		}`)
 		.catch(err => {
 			console.log("error: " + err)
@@ -1125,37 +1443,28 @@ async function dropDownSetup() {
 	var one = document.getElementById("dropdownMenu1");
 	var two = document.getElementById("dropdownMenu2");
 	var three = document.getElementById("dropdownMenu3");
+	var withD = document.getElementById("dropdownWithdraw");
 
-	var html1 = one.innerHTML;
-	var html2 = two.innerHTML;
-	var html3 = three.innerHTML;
+	var htmlWD = '';
 
-	//reFresh Dropdown
-	html1 = '';
-	html2 = '';
-	html3 = '';
 	document.getElementById("dropdownMenuButton1").innerHTML = '1st Gem';
 	document.getElementById("dropdownMenuButton2").innerHTML = '2nd Gem';
 	document.getElementById("dropdownMenuButton3").innerHTML = '3rd Gem';
+	document.getElementById("dropdownMenuButtonWithdraw").innerHTML = 'Select a GEM';
 
 	//set up drop down text
 	for (let i = 0; i < total; i++) {
 
 		var gemStatus = await nftContract.methods.gemStatus(ownedNFts[i
 		]).call(); //get the status of gem from owned NFts
-		html1 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
-		html2 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
-		html3 += '<option class="dropdown-item">Gem#' + ownedNFts[i
-		] + ': Lvl' + gemStatus.level + ' Bal' + gemStatus.level + '</option>\n';
-		// html1 += '<option class="dropdown-item">Level' + i + '</option>\n';
-		// html2 += '<option class="dropdown-item">Level' + i + '</option>\n';
-		// html3 += '<option class="dropdown-item">Level' + i + '</option>\n';
+
+		htmlWD += '<option class="dropdown-item">Gem#' + ownedNFts[i
+		] + ' :Lvl' + gemStatus.level + ' :Bal' + gemStatus.level + '</option>\n';
 	}
-	one.innerHTML = html1;
-	two.innerHTML = html2;
-	three.innerHTML = html3;
+	one.innerHTML = htmlWD;
+	two.innerHTML = htmlWD;
+	three.innerHTML = htmlWD;
+	withD.innerHTML = htmlWD;
 
 	//Add listeners
 	$('#dropdownMenu1 option').on('click', function () {
@@ -1181,6 +1490,11 @@ async function dropDownSetup() {
 		// showImage(3, token);
 		preventDupes();
 	});
+
+	$('#dropdownWithdraw option').on('click', function () {
+		document.getElementById("dropdownMenuButtonWithdraw").innerHTML = $(this).html();
+	});
+
 	console.log("Dropdown ready");
 }
 function sendAlert(message) {
