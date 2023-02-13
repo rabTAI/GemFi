@@ -47,14 +47,14 @@
                 <div class="fixed-container col-lg-3 text-center">
                     <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
                     <h1 class="text-white heading">GemFi</h1>
-                    <p class="text-white mb-0 title">Will Rock Your Life</p>
-                    <a class="btn myButton btn-xl rounded-pill mt-5 sub-title" href="#scroll">Learn More</a>
+                    <p class="text-white mb-0 subheading">Will Rock Your Life</p>
+                    <a class="btn myButton btn-xl rounded-pill mt-3 sub-title" href="#scroll">Learn More</a>
                     <div class="justify-content-center mt-5">
                         <div id="alert" class="alert mt-3">
                             <p class="sub-title text-white">Alerts</p>
-                            <p id="alert-perm" class="text-white mb-0 p-small">
+                            <p id="alert-perm" class="alert-perm text-white text-bold mb-0 p-small">
                             <p>
-                            <p id="alert-txt" class="text-white mb-0 p-small"></p>
+                            <p id="alert-txt" class="text-white mb-0 p-small alert-txt"></p>
                         </div>
                         <div id="loader" class="loader hide-loader"></div>
                     </div>
@@ -63,7 +63,7 @@
                     <h5 class="mb-5 title text-center">Gem Pot Board</h5>
                     <div id="stat2" class="stats2 pb-5 mb-3"></div>
                     <div class="pickWinner text-center mt-3 mb-3">
-                        <button id="win" hidden class="mintButton-outline btn-sm" onclick="pickWinner()" role="button">Pick
+                        <button id="win" hidden disabled class="mintButton-outline btn-sm" onclick="pickWinner()" role="button">Pick
                             Winner</button>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                     </div>
 
                     <!-- Withdraw -->
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-3">Withdraw
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-4">Withdraw
                         <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
                             <a style="pointer-events: none;" href="">
                                 <i class="bi bi-info-square info"></i></a></span>
@@ -109,7 +109,11 @@
                             role="button">GO</button>
                     </div>
                 </div>
-
+                <div class="col-lg-3 base-container gemContainer py-3 mb-2 mx-2 text-center justify-content-center">
+                    <div id="gemImage1" class="gemImage"></div>
+                    <div id="gemImage2" class="gemImage"></div>
+                    <div id="gemImage3" class="gemImage"></div>
+                </div>
                 <!-- ======= Upgrade Section ======= -->
                 <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
                     <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-5">Upgrade GEM</h3>
@@ -145,7 +149,7 @@
                     <div class="justify-content-center">
                         <p class="text-center text-white ">Upgrade price: 0 FTM</p>
 
-                        <button class="mintButton-outline btn-lg rounded-pill mb-2" onclick="upgradeWrapper()"
+                        <button class="mintButton-outline btn-lg rounded-pill mt-2 mb-3" onclick="upgradeWrapper()"
                             role="button">Upgrade</button>
 
                         <div class="" id="balance"></div>

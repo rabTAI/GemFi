@@ -938,6 +938,7 @@ var nftContract;
 var currentAddr;
 var web3;
 var ownedNFts = [];
+var gemPotEligible = [];
 // var testContract = "0x41f3532B4667b3A4a526EeA0c4103e486c5053e7"; //FAM reward card
 
 /* ----------------------------
@@ -970,7 +971,7 @@ async function connect() {
 		if (err.code === 4001) {
 			// EIP-1193 userRejectedRequest error
 			// If this happens, the user rejected the connection request.
-			alert('Please connect wallet.');
+			sendAlert('Please connect wallet.');
 		} else {
 			console.error(err);
 		}
@@ -991,7 +992,7 @@ async function loadWeb3() {
 			await loadContracts();
 			await connect();
 		} else {
-			alert('Please switch to Fantom Opera in your wallet');
+			sendAlert('Please switch to Fantom Opera in your wallet');
 		}
 	} else {
 		$('#connectButton').attr('disabled', true)
@@ -1010,54 +1011,23 @@ async function loadContracts() {
 /* ----------------------------
 *	get Mint token from trxn
 * ----------------------------*/
-async function getTokenId(tx) {
-	var newMints = [];
+async function getMintTokenID(tx) {
 
-	await nftContract.events.Transfer({ fromBlock: tx.blockNumber }, function (error, events) { })
-		.on('data', function (events) {
-			var jj = events.returnValues.tokenId;
-			if (!newMints.includes(jj)) {
-				newMints.push(jj);
-			}
-		});
-
-	if (newMints.length != 0) {
-		sendAlertPerm("Last Minted token" + Arrays.toString(newMints));
-	}
-	// if (confirm("Mint was successful. New minted NFTs Token: " + newMints[0] + ", " + newMints[1] + ", " + newMints[2])) {
-	// 	location.reload();
-	// } else {
-	// 	location.reload();
-	// }
-	return newMints;
-}
-
-/* ----------------------------
-*	get upgrade success from trxn
-* ----------------------------*/
-async function upgradeSuccessOrNot(tx) {
-	var tokenUpgraded = 0;
-	var success;
-
-	await nftContract.events.GemUpgrade({ fromBlock: tx.blockNumber }, function (error, events) { })
-		.on('data', function (events) {
-			// console.log(events.returnValues);
-			success = events.returnValues.trueOrFalse;
-			if (success == true) {
-				tokenUpgraded = events.returnValues.getId;
-
-				sendAlertPerm("Success: Upgraded Gem #" + tokenUpgraded);
-
-				// if (confirm("Upgrade was successful. New minted NFT: " + tokenUpgraded)) {
-				// 	location.reload();
-				// }
-				// else {
-				// 	location.reload();
-			} else {
-				sendAlertPerm("Last Upgrade failed");
-			}
-		});
-	return tokenUpgraded;
+	var interval1 = setInterval(function a() {
+		var newMints = [];
+		nftContract.events.Transfer({ fromBlock: tx.blockNumber }, function (error, events) { })
+			.on('data', function (events) {
+				var jj = events.returnValues.tokenId;
+				console.log(jj);
+				if (!newMints.includes(jj)) {
+					newMints.push(jj);
+				}
+				if (newMints.length == 3) {
+					sendAlertPerm("New Minted Gem #" + JSON.stringify(newMints));
+					clearInterval(interval1);
+				}
+			});
+	}, 3000);
 }
 
 /* ----------------------------
@@ -1066,7 +1036,6 @@ async function upgradeSuccessOrNot(tx) {
 async function mint(mintAmount) {
 	var mintPrice = 1e18;
 	// console.log(mintPrice);
-
 	var totalPrice = mintPrice * mintAmount;
 
 	await nftContract.methods.mint(mintAmount).send({
@@ -1075,94 +1044,35 @@ async function mint(mintAmount) {
 	}, function (error, hash) {
 		if (!error) {
 			console.log("Transaction sent!", hash);
+
 			const interval = setInterval(function () {
 				sendAlertPerm("Getting mint status...");
 				console.log("Attempting to get transaction receipt...");
-				web3.eth.getTransactionReceipt(hash, function (err, rec) {
+
+				web3.eth.getTransactionReceipt(hash, function (error, rec) {
 					if (rec) {
+						console.log(rec);
 						if (rec.status == true) {
-							console.log(rec);
+							clearInterval(interval);
+							updateData();
 							try {
-								getTokenId(rec);
-							} catch (error) {
-								console.log(error);
+								getMintTokenID(rec);
+							} catch (e) {
+								console.log("Error getting mint Id:", e);
 							}
 						}
-						// alert("Mint Successful. Refresh the page");
-						clearInterval(interval);
 					}
 				});
-			},
-				1000);
-		} else {
-			console.log("Something went wrong while submitting your transaction:", error);
+			}, 3000);
 		}
-	});
 
-	reloadStats();
-}
-/* ----------------------------
-*	Upgrade
-* ----------------------------*/
-async function upgrade(gem1, gem2, gem3) {
-
-	await nftContract.methods.upgradeGems(gem1, gem2, gem3).send({
-		from: currentAddr,
-		value: 0
-	}, function (error, hash) {
-		if (!error) {
-			console.log("Transaction sent!", hash);
-			const interval = setInterval(function () {
-				console.log("Attempting to get transaction receipt...");
-				sendAlertPerm("Getting upgrade status...");
-
-				web3.eth.getTransactionReceipt(hash, function (err, rec) {
-					if (rec) {
-						if (rec.status == true) {
-							console.log(rec);
-							try {
-								upgradeSuccessOrNot(rec);
-							} catch (error) {
-								console.log(error);
-							}
-						}
-						clearInterval(interval);
-					}
-				});
-			},
-				1000);
-		} else {
-			console.log("Something went wrong while submitting your transaction:", error);
+	}).catch(err => {
+		if (err.code === 4001) {
+			// EIP-1193 userRejectedRequest error
+			// If this happens, the user rejected the connection request.
+			sendAlertPerm("User denied Transaction");
 		}
-	});
-	reloadStats();
-	// location.reload();
-}
-/* ----------------------------
-*	Withdraw
-* ----------------------------*/
-async function withdrawBalance(token) {
-
-	await nftContract.methods.withdrawBalance(token).send({
-		from: currentAddr,
-		value: 0
-	}, function (error, hash) {
-		if (!error) {
-			console.log("Transaction sent!", hash);
-			const interval = setInterval(function () {
-				console.log("Attempting to get transaction receipt...");
-				web3.eth.getTransactionReceipt(hash, function (err, rec) {
-					if (rec) {
-						if (rec.status == true) {
-							console.log(rec);
-							sendAlert("Withdraw successful")
-						}
-						clearInterval(interval);
-					}
-				});
-			},
-				1000);
-		} else {
+		else {
 			console.log("Something went wrong while submitting your transaction:", error);
 		}
 	});
@@ -1174,6 +1084,77 @@ async function withdrawBalance(token) {
 async function mintWrapper() {
 	var mintAmount = document.getElementById('input').value;
 	mint(mintAmount);
+}
+
+/* ----------------------------
+*	get upgrade success from trxn
+* ----------------------------*/
+async function upgradeStatus(tx) {
+	var interval = setInterval(function a() {
+		var tokenUpgraded = 0;
+		var success;
+
+		nftContract.events.GemUpgrade({ fromBlock: tx.blockNumber }, function (error, events) { })
+			.on('data', function (events) {
+				console.log(events.returnValues);
+				clearInterval(interval);
+				success = events.returnValues.trueOrFalse;
+				if (success == true) {
+					tokenUpgraded = events.returnValues.getId;
+					sendAlertPerm("Success: Gems upgraded!\nNew Gem #" + tokenUpgraded);
+
+				} else {
+					sendAlertPerm("Last Upgrade failed");
+					console.log(events.returnValues);
+				}
+			});
+	}, 3000);
+}
+
+/* ----------------------------
+*	Upgrade
+* ----------------------------*/
+async function upgrade(gem1, gem2, gem3) {
+
+	await nftContract.methods.upgradeGems(gem1, gem2, gem3).send({
+		from: currentAddr,
+		value: 0
+	}, function (error, hash) {
+		if (!error) {
+			console.log("Transaction sent!", hash);
+
+			const interval = setInterval(function () {
+				console.log("Attempting to get transaction receipt...");
+				sendAlertPerm("Getting upgrade status...");
+
+				web3.eth.getTransactionReceipt(hash, function (error, rec) {
+
+					if (rec) {
+						console.log(rec);
+						if (rec.status == true) {
+							clearInterval(interval);
+							updateData();
+							try {
+								upgradeStatus(rec);
+							} catch (e) {
+								console.log("Error getting upgrade status", e);
+								sendAlertPerm("Error getting Upgrade status");
+							}
+						}
+					}
+				});
+			}, 3000);
+		}
+	}).catch(err => {
+		if (err.code === 4001) {
+			// EIP-1193 userRejectedRequest error
+			// If this happens, the user rejected the connection request.
+			sendAlertPerm("User denied Transaction");
+		}
+		else {
+			console.log("Something went wrong while submitting your transaction:", error);
+		}
+	});
 }
 
 /* ----------------------------
@@ -1197,9 +1178,51 @@ async function upgradeWrapper() {
 		console.log(token1, token2, token3);
 		upgrade(token1, token2, token3);
 	} else {
-		console.log("Choose same level Gem");
-		sendAlert("Choose same level Gem");
+		// console.log("Error: Gems not same level");
+		sendAlertPerm("Choose same level Gems for upgrade", 'red');
 	}
+}
+
+/* ----------------------------
+*	Withdraw
+* ----------------------------*/
+async function withdrawBalance(token) {
+
+	await nftContract.methods.withdrawBalance(token).send({
+		from: currentAddr,
+		value: 0
+	}, function (error, hash) {
+		if (!error) {
+			console.log("Transaction sent!", hash);
+
+			const interval = setInterval(function () {
+				sendAlertPerm("Getting Withdraw status...")
+				console.log("Attempting to get transaction receipt...");
+
+				web3.eth.getTransactionReceipt(hash, function (error, rec) {
+					if (rec) {
+						console.log(rec);
+						if (rec.status == true) {
+							sendAlertPerm("Withdraw successful")
+							clearInterval(interval);
+							updateData();
+						}
+					}
+				});
+			},
+				1000);
+		}
+	}).catch(err => {
+		hj
+		if (err.code === 4001) {
+			// EIP-1193 userRejectedRequest error
+			// If this happens, the user rejected the connection request.
+			sendAlertPerm("User denied Transaction");
+		}
+		else {
+			console.log("Something went wrong while submitting your transaction:", error);
+		}
+	});
 }
 
 /* ----------------------------
@@ -1208,40 +1231,86 @@ async function upgradeWrapper() {
 async function withdrawWrapper() {
 	var gem = document.getElementById("dropdownMenuButtonWithdraw").textContent;
 	var token = parseDropSelection(gem, '#', ' :Lvl');
-	console.log(token);
+	// console.log(token);
 	withdrawBalance(token);
 }
 
-function parseDropSelection(text, a, b) {
-	// var token = text.slice(text.indexOf('#') + 1, text.lastIndexOf(':Lvl'));
-	var token = text.slice(text.indexOf(a) + 1, text.lastIndexOf(b));
-	return token;
-}
+async function winnerStatus(tx) {
+	var interval = setTimeout(function a() {
+		var winner = 0;
 
+		nftContract.events.WinnerSelected({ fromBlock: tx.blockNumber }, function (error, events) { })
+			.on('data', function (events) {
+				console.log(events.returnValues);
+				winner = events.returnValues.gemId
+				sendAlertPerm("Winner !!!\nGem #" + winner + " Pot: " + gemPot);
+				reloadStats();
+				clearInterval(interval);
+			});
+	}, 3000);
+}
+async function checkEligibility() {
+	if (gemPotEligible.length == 0) {
+		return 0
+	} else if (ownedNFts.length == 0) {
+		return 0;
+	} else {
+		ownedNFts.forEach(obj => {
+			if (gemPotEligible.includes(obj.token)) {
+				return obj.token;
+			}
+		});
+		return 0;
+	}
+}
 /* ----------------------------
 *	Pick Winner
 * ----------------------------*/
 async function pickWinner() {
-	var button = document.getElementById("win");
-	//var time = await nftContract.methods.winnerPickTime().call();
+	console.log("pick winner");
+	var eligible = await checkEligibility();
 
-	var res = await nftContract.methods.pickWinner().call()
-		.then(res => {
-			console.log(res.json());
-		})
-		.catch(err => {
-			console.log(err);
-			// var message = JSON.parse(err.data);
-			// console.log(message.message);
-			// alert("Pick winner is not ready yet");
+	if (eligible != 0) {
+		await nftContract.methods.pickWinner(eligible).send({
+			from: currentAddr,
+			value: 0,
+		}, function (hash) {
+			console.log("Transaction sent!", hash);
+			const interval = setInterval(function () {
+				sendAlertPerm("Getting Winner status...")
+				console.log("Attempting to get transaction receipt...");
+
+				web3.eth.getTransactionReceipt(hash, function (error, rec) {
+					if (rec) {
+						console.log(rec);
+
+						if (rec.status == true) {
+							clearInterval(interval);
+							reloadStats();
+							try {
+								winnerStatus(rec);
+							} catch (e) {
+								console.log("Error getting winner status", e);
+							}
+						}
+					}
+				});
+			},
+				1000);
+		}).catch(err => {
+			if (err.code === 4001) {
+				// EIP-1193 userRejectedRequest error
+				// If this happens, the user rejected the connection request.
+				sendAlertPerm("User denied Transaction");
+			}
+			else {
+				console.log("Something went wrong while submitting your transaction:", error);
+			}
 		});
-	//console.log(res);
-	var winner = await nftContract.methods.lastWinner().call();
-	if (winner != 0) {
-		{
-			alert("Winner is" + res.substring(5, 38), "***");
-		}
+	} else {
+		sendAlertPerm("Not eligible to call function", 'red');
 	}
+
 }
 
 async function contractCreationTime() {
@@ -1258,10 +1327,12 @@ async function contractCreationTime() {
 
 	return time.timestamp;
 }
-
+/* ----------------------------
+*	Reload game stats
+* ----------------------------*/
 async function reloadStats() {
 	if (nftContract) {
-		sendAlert("...Updating...Updating...");
+		sendAlert("Updating...Stats...");
 		document.getElementById("loader").classList.toggle("hide-loader");
 
 		try {
@@ -1296,19 +1367,16 @@ async function reloadStats() {
 					38),
 					"***")
 			}
-			stat += '<table class="table text-white"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
+			stat += '<table class="table text-white mb-0"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
 			stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td></tbody>\n';
 			stat += '<tbody><tr><td>Gem Pot Balance: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
 			stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
 			stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td></tbody></table>\n';
 
+			gemPotEligible = [];
 
 			var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
-
 			if (getTotalHighLevelGems > 0) {
-				document.getElementById("win").removeAttribute("hidden");
-				document.getElementById("win").setAttribute('disabled', false);
-
 				for (let i = 0; i < getTotalHighLevelGems; i++) {
 					var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
 					// var owner = await nftContract.methods.ownerOf(highestLevelGems).call();
@@ -1317,134 +1385,161 @@ async function reloadStats() {
 					// 	38),
 					// 	"***") + '</p>';
 					// var status = await nftContract.methods.gemStatus(highestLevelGems);
+
+					gemPotEligible.push(highestLevelGems);
 					stat2 += '<p>Gem #' + highestLevelGems + '</p\n'
 				}
+				document.getElementById("win").removeAttribute("hidden");
+				document.getElementById("win").removeAttribute("disabled");
 			} else {
 				stat2 += 'Not ready yet!';
-				document.getElementById("win").setAttribute('disabled', true);
+				document.getElementById("win").setAttribute("disabled");
 			}
 			document.getElementById("stat1").innerHTML = stat;
 			document.getElementById("stat2").innerHTML = stat2;
 		} catch (err) {
 			console.log("Game Stat Error\n" + err);
 		}
-		await getOwnedGemTest();
-		await dropDownSetup();
-
 		document.getElementById("loader").classList.toggle("hide-loader");
-		sendAlert("");
 	}
 }
 /* ----------------------------
 *	Owned Gem
 * ----------------------------*/
-async function getOwnedGem() {
-	// sendAlert("Getting Owned Gems");
-	ownedNFts.length = 0;
+async function getOwned(index, nft) {
 
-	var bal = await nftContract.methods.balanceOf(currentAddr).call();
+	/* Token of owner Method*/
+	var tokenId = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, index).call(); //get token
+	var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
+	/* Paintswap method */
+	// var tokenId = nft.tokenId; //paintswap method
+	// var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
 
-	var stat = document.getElementById("balance").innerHTML;
-	stat = '';
-	stat += '<p class="text-center text-white sub-title pt-5">Owned Gems: ' + bal + '</p>\n';
-	document.getElementById("balance").innerHTML = stat;
-	// console.log("balance " + bal);
-	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
-	&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${contAddress
-		}`)
-		.catch(err => {
-			console.log("error: " + err)
-		});
-	var nft = await response.json();
-	// console.log(ownedNFts.length);
-	for (let i = 0; i < bal; i++) {
-		console.log(nft.nfts[i
-		]);
-		ownedNFts.push(nft.nfts[i
-		]);
-		// showImage(ownedNFts[i].image, ownedNFts[i].name);
-		// 	var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
-		// 	ownedNFts.push(nfts);
-		// var uri = await nftContract.methods.tokenURI(ownedNFts[i].token_id).call();
-		// await fetch(uri)
-		// 	.then(res => res.json())
-		// 	.then(data => {
-		// 		//console.log(data);
-		// 		// showImage(data.image, data.name);
-		// 	})
-		// 	.catch(err => {
-		// 		console.log("error: " + err)
-		// 		//debugAlert("getStaked() err" + err);
-		// 	});
-	}
-	// showImage();
+	//=============//
+	//add to array
+	var obj = { token: tokenId, level: gemStatus.level, balance: gemStatus.balance };
+	ownedNFts.push(obj);
+
+	return obj;
 }
-
-async function getOwnedGemTest() {
-	// sendAlert("Getting Owned Gems");
-	ownedNFts.length = 0;
-
-	var bal = await nftContract.methods.balanceOf(currentAddr).call();
-	console.log("balance " + bal);
-
-	var stat = document.getElementById("balance").innerHTML;
-	stat = '';
-	stat += '<p class="text-center text-white pt-3">Owned Gems: ' + bal + '</p>\n';
-	document.getElementById("balance").innerHTML = stat;
-
-	for (let i = 0; i < bal; i++) {
-		var nfts = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call();
-		// console.log(nfts);
-		ownedNFts.push(nfts);
-		// var uri = await nftContract.methods.tokenURI(nfts).call();
-		// await fetch(uri)
-		// 	.then(res => res.json())
-		// 	.then(data => {
-		// 		console.log(data);
-		// 		// showImage(data.image, data.name);
-		// 	})
-		// 	.catch(err => {
-		// 		console.log("error: " + err)
-		// 		//debugAlert("getStaked() err" + err);
-		// 	});
-	}
-}
-
 /* ----------------------------
 *	Show Image of GEM
 * ----------------------------*/
-async function showImage(container, token) {
-	var gemContainer = document.getElementById("gemContainer" + container).innerHTML;
+async function showImage(num, token) {
+	var gemContainer = document.getElementById("myGemImage" + num).innerHTML;
 
-	// var uri = await nftContract.methods.tokenURI(token).call();
-	// await fetch(uri)
-	// 	.then(res => res.json())
-	// 	.then(data => {
-	// 		console.log(data);
-	// 		gemContainer += '<img class="gem" src="' + data.image + '">\n';
-	// 		document.getElementById("myGemImage" + container).innerHTML = gemContainer;
-	// 	})
-	// 	.catch(err => {
-	// 		console.log("error: " + err)
-	// 		//debugAlert("getStaked() err" + err);
-	// 	});
-	gemContainer += '<div class="myGemImage">\n';
-	gemContainer += '<embed class="gem" src="svg2.html">\n';
-	gemContainer += '</div\n';
-
-	document.getElementById("gemContainer" + container).innerHTML = gemContainer;
-}
-/* ----------------------------
-*	Game Stats
-* ----------------------------*/
-async function getDataContract() {
 	try {
-		await loadWeb3();
-		await reloadStats();
-	} catch (e) {
-		console.log("Load Contract Error\n" + e);
+		var uri = await nftContract.methods.tokenURI(token).call();
+		await fetch(uri)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data);
+				gemContainer += '<img class="gem" src="' + data.image + '">\n';
+			})
+			.catch(err => {
+				console.log("error: " + err)
+				//debugAlert("getStaked() err" + err);
+			});
+	} catch (error) {
+		console.log(error);
 	}
 }
+
+async function dropDownSetup() {
+	ownedNFts.length = 0;
+
+	//reset droptext
+	document.getElementById("dropdownMenuButton1").textContent = '1st Gem';
+	document.getElementById("dropdownMenuButton2").textContent = '2nd Gem';
+	document.getElementById("dropdownMenuButton3").textContent = '3rd Gem';
+	document.getElementById("dropdownMenuButtonWithdraw").textContent = 'Select a GEM';
+	//Preparing dropdown
+	var one = document.getElementById("dropdownMenu1");
+	var two = document.getElementById("dropdownMenu2");
+	var three = document.getElementById("dropdownMenu3");
+	var withD = document.getElementById("dropdownWithdraw");
+
+	var htmlWD = '';
+
+	try {
+		var bal = await nftContract.methods.balanceOf(currentAddr).call();
+		// console.log("balance " + bal);
+
+		var stat = document.getElementById("balance").innerHTML;
+		stat = '';
+		stat += '<p class="text-center text-white pt-3">Owned Gems: ' + bal + '</p>\n';
+		document.getElementById("balance").innerHTML = stat;
+
+		////===========paintSwap method=============//
+		// 	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
+		// &orderBy=lastTransferTimestamp&orderDirection=desc&collections=${contAddress
+		// 		}`)
+		// 		.catch(err => {
+		// 			console.log("error: " + err)
+		// 		});
+		// 	var nfts = await response.json();
+
+		for (let i = 0; i < bal; i++) {
+			var nft = await getOwned(i); //get owned by index method
+			//dropdown menu
+			htmlWD += '<option class="dropdown-item">Gem #' + nft.token + ' :Lvl ' + nft.level + ' :Bal ' + nft.balance / 1e18 + '</option>\n';
+			//========================//
+			// var nft = getOwned(nfts[i]); //get owned by index method
+			// //dropdown menu
+			// htmlWD += '<option class="dropdown-item">Gem #' + nft.tokenId + ' :Lvl ' + nftStat.level + ' :Bal ' + nftStat.balance / 1e18 + '</option>\n';
+		}
+		one.innerHTML = htmlWD;
+		two.innerHTML = htmlWD;
+		three.innerHTML = htmlWD;
+		withD.innerHTML = htmlWD;
+
+		dropDownListener();
+	}
+	catch (error) {
+		console.log("Get owned gem error:", error);
+	}
+}
+
+/* ----------------------------
+*	Dropdown menu setup
+* ----------------------------*/
+async function dropDownListener() {
+
+	//Add listeners
+	$('#dropdownMenu1 option').on('click', function () {
+		// console.log($(this).html());
+		document.getElementById("dropdownMenuButton1").textContent = $(this).html();
+		preventDupes();
+
+		// var token = parseDropSelection($(this).html());
+		// showImage(1, token);
+	});
+
+	$('#dropdownMenu2 option').on('click', function () {
+		//console.log($(this).html());
+		document.getElementById("dropdownMenuButton2").textContent = $(this).html();
+		preventDupes();
+
+		// var token = parseDropSelection($(this).html());
+		// showImage(2, token);
+
+	});
+
+	$('#dropdownMenu3 option').on('click', function () {
+		// console.log($(this).html());
+		document.getElementById("dropdownMenuButton3").textContent = $(this).html();
+		preventDupes();
+
+		// var token = parseDropSelection($(this).html());
+		// showImage(3, token);
+	});
+
+	$('#dropdownWithdraw option').on('click', function () {
+		document.getElementById("dropdownMenuButtonWithdraw").textContent = $(this).html();
+	});
+	// console.log("Dropdown ready");
+}
+
 /* ----------------------------
 *	Prevent duplicate in dropdown
 * ----------------------------*/
@@ -1493,79 +1588,54 @@ function preventDupes() {
 	// options2[index - 1].disabled = true;
 }
 
-/* ----------------------------
-*	Dropdown menu setup
-* ----------------------------*/
-async function dropDownSetup() {
-	// sendAlert("Setting Dropdown");
-	var total = ownedNFts.length;
-	//var total = 5;
-	var one = document.getElementById("dropdownMenu1");
-	var two = document.getElementById("dropdownMenu2");
-	var three = document.getElementById("dropdownMenu3");
-	var withD = document.getElementById("dropdownWithdraw");
+async function updateData() {
+	document.getElementById("loader").classList.toggle("hide-loader");
+	sendAlert("...Getting Owned Gems...");
+	await dropDownSetup();
+	document.getElementById("loader").classList.toggle("hide-loader");
 
-	var htmlWD = '';
-
-	document.getElementById("dropdownMenuButton1").innerHTML = '1st Gem';
-	document.getElementById("dropdownMenuButton2").innerHTML = '2nd Gem';
-	document.getElementById("dropdownMenuButton3").innerHTML = '3rd Gem';
-	document.getElementById("dropdownMenuButtonWithdraw").innerHTML = 'Select a GEM';
-
-	//set up drop down text
-	for (let i = 0; i < total; i++) {
-
-		var gemStatus = await nftContract.methods.gemStatus(ownedNFts[i
-		]).call(); //get the status of gem from owned NFts
-
-		htmlWD += '<option class="dropdown-item">Gem #' + ownedNFts[i
-		] + ' :Lvl ' + gemStatus.level + ' :Bal ' + gemStatus.balance / 1e18 + '</option>\n';
-	}
-	one.innerHTML = htmlWD;
-	two.innerHTML = htmlWD;
-	three.innerHTML = htmlWD;
-	withD.innerHTML = htmlWD;
-
-	//Add listeners
-	$('#dropdownMenu1 option').on('click', function () {
-		// console.log($(this).html());
-		document.getElementById("dropdownMenuButton1").innerHTML = $(this).html();
-		// var token = parseDropSelection($(this).html());
-		// showImage(1, token);
-		preventDupes();
-	});
-
-	$('#dropdownMenu2 option').on('click', function () {
-		//console.log($(this).html());
-		document.getElementById("dropdownMenuButton2").innerHTML = $(this).html();
-		// var token = parseDropSelection($(this).html());
-		// showImage(2, token);
-		preventDupes();
-	});
-
-	$('#dropdownMenu3 option').on('click', function () {
-		// console.log($(this).html());
-		document.getElementById("dropdownMenuButton3").innerHTML = $(this).html();
-		// var token = parseDropSelection($(this).html());
-		// showImage(3, token);
-		preventDupes();
-	});
-
-	$('#dropdownWithdraw option').on('click', function () {
-		document.getElementById("dropdownMenuButtonWithdraw").innerHTML = $(this).html();
-	});
-
-	console.log("Dropdown ready");
+	await reloadStats();
+	sendAlert("Ready");
 }
+/* ----------------------------
+*	Game Stats
+* ----------------------------*/
+async function getDataContract() {
+	try {
+		await loadWeb3();
+		await updateData();
+		console.log("Ready");
+	} catch (e) {
+		console.log(e);
+		sendAlert("Error getting data. Please reload", red)
+	}
+}
+function parseError(err) {
+	var text = err + '';
+	var error = text.slice(text.indexOf('{') - 1, text.lastIndexOf('}') + 1);
+	var message = JSON.parse(error).message;
+	return message;
+}
+
+function parseDropSelection(text, a, b) {
+	// var token = text.slice(text.indexOf('#') + 1, text.lastIndexOf(':Lvl'));
+	var token = text.slice(text.indexOf(a) + 1, text.lastIndexOf(b));
+	return token;
+}
+
 function sendAlert(message) {
 	var alert = document.getElementById("alert-txt").innerHTML;
 	alert = message;
 	document.getElementById("alert-txt").innerHTML = alert;
 }
-function sendAlertPerm(message) {
-	var alert = document.getElementById("alert-perm").innerHTML;
-	alert = message;
-	document.getElementById("alert-perm").innerHTML = alert;
+function sendAlertPerm(message, red) {
+	var alert = document.getElementById("alert-perm");
+	if (red == 'red') {
+		alert.style.cssText = 'background-color:rgb(238, 9, 121, 0.5);';
+	} else {
+		alert.style.cssText = 'background-color:none;';
+	}
+	alert.innerHTML = message;
 }
 
 $(document).ready(function () {
