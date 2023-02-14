@@ -61,17 +61,19 @@
     font-size: 15px;
 }
 
-tbody::after{
+/* tbody::after{
     content: '';
     display:table-row;
     height: 30px;
     border-bottom: 2px solid transparent;
-} 
+}  */
 
 tr{
     border-bottom: 2px solid white;
 }
-
+td{
+    width: 200px;
+}
 /*
 * Welcome
 */
@@ -127,7 +129,7 @@ tr{
 
 .stats1{
     overflow-y: scroll;
-    height: 17rem;
+    height: 20 rem;
 }
 .stats2{
     overflow-y: scroll;
@@ -166,6 +168,11 @@ tr{
     left:0;right:0;
     bottom: 0;
     top:15rem;
+}
+@media screen and (max-width: 991px) {
+    .gemContainer {
+    top: 0;
+    }
 }
 
 .myGemImage {
