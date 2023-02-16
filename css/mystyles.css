@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap');
+
 ::-webkit-scrollbar {
     width: 12px;
     /* width of the entire scrollbar */
@@ -22,7 +23,7 @@
 .bg-image-full {
     background-image: url(../assets/img/gemBG.jpg);
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center;
     background-size: cover;
     background-attachment: fixed;
     width: 100%;
@@ -61,6 +62,10 @@
     font-size: 15px;
 }
 
+.disabled{
+    pointer-events: none;
+    opacity: 0.5;
+}
 /* tbody::after{
     content: '';
     display:table-row;
@@ -68,16 +73,22 @@
     border-bottom: 2px solid transparent;
 }  */
 
-tr{
+tr {
     border-bottom: 2px solid white;
 }
-td{
+
+td {
     width: 200px;
 }
+
 /*
 * Welcome
 */
 .welcome-container {
+    background-color: rgb(0, 0, 0, 0.2);
+    box-shadow: 0px 5px 50px #303030, inset 0px 0px 0px rgb(0 0 0 / 32%);
+}
+.about-container{
     background-color: rgb(0, 0, 0, 0.3);
     box-shadow: 0px 5px 50px #303030, inset 0px 0px 0px rgb(0 0 0 / 32%);
 }
@@ -92,18 +103,21 @@ td{
     height: 25rem;
 }
 
-.alert{
+.alert {
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
     border-radius: 20px;
     max-height: 200px;
     bottom: 0px;
 }
-.alert-txt{
+
+.alert-txt {
     font-size: 12px;
 }
-.alert-perm{
+
+.alert-perm {
     font-weight: bold;
 }
+
 .stat-container {
     background: transparent;
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
@@ -127,16 +141,17 @@ td{
     }
 }
 
-.stats1{
+.stats1 {
     overflow-y: scroll;
     height: 20 rem;
 }
-.stats2{
+
+.stats2 {
     overflow-y: scroll;
     height: 15rem;
 }
 
-.pickWinner{
+.pickWinner {
     position: relative;
     margin-left: auto;
     margin-right: auto;
@@ -151,41 +166,83 @@ td{
     border-radius: 20px;
     border: 2px solid whitesmoke;
 }
+
 .base-container {
     /* background-color: rgb(0, 0, 0, 0.5); */
     border-radius: 20px;
     box-shadow: 0px 5px 30px rgb(0, 29, 72), inset 0px 0px 0px rgb(0 0 0 / 32%);
-    height: 30rem;
 }
+
 .gemContainer {
-    padding: 5px;
-    justify-content: center;
     overflow-x: hidden;
     overflow-y: hidden;
-    height:15rem;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items:flex-end;
+    align-self: flex-end;
+    height: 100%;
+}
 
-    position: relative;
-    left:0;right:0;
+.gemBox {
+    align-items: center;
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    height: auto;
+    
+    position:relative;
     bottom: 0;
-    top:15rem;
+    top:0;
+}
+.myGemImage {
+    justify-content: center;
+    max-width: 8rem;
+    aspect-ratio: 3/4;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+
+    -webkit-transition: .3s ease;
+    transition: .3s ease;
+}
+
+#gemImage1:hover .myGemImage{
+    transform: translate(100%, -250%) scale(3);
+    -webkit-transition: .3s ease;
+        transition: .3s ease;
+}
+#gemImage2:hover .myGemImage{
+    transform: translate(0, -250%) scale(3);
+    -webkit-transition: .3s ease;
+        transition: .3s ease;
+}
+
+#gemImage3:hover .myGemImage{
+    transform: translate(-100%, -250%) scale(3);
+    -webkit-transition: .3s ease;
+        transition: .3s ease;
 }
 @media screen and (max-width: 991px) {
-    .gemContainer {
-    top: 0;
+    #gemImage1:hover .myGemImage{
+        transform: none;
+    }
+
+    #gemImage2:hover .myGemImage{
+        transform: none;
+    }
+
+    #gemImage3:hover .myGemImage{
+        transform: none;
     }
 }
 
-.myGemImage {
-    justify-content: center;
-    max-width: 100px;
-    max-height: 100px;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
 .gem {
-    width: 100%;
+    width: 200%;
     overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 /*
@@ -233,10 +290,12 @@ td{
     align-items: center;
     width: 100%;
 }
+
 .dropdown-menu {
     overflow-y: scroll;
     max-height: 300px;
 }
+
 .dropdown button {
     border-radius: 15px;
     outline: none;
@@ -246,7 +305,7 @@ td{
     cursor: pointer;
     margin-bottom: 10px;
     width: 300px;
-    height:50px;
+    height: 50px;
 }
 
 .input-group {
@@ -291,14 +350,15 @@ td{
 
 }
 
-.withdrawBalance{
+.withdrawBalance {
     justify-content: center;
-width: 100%;
+    width: 100%;
 }
 
-.info{
- color: white;
+.info {
+    color: white;
 }
+
 .info-text {
     position: relative;
     border-bottom: 1px dotted black;
@@ -312,7 +372,7 @@ width: 100%;
     background-color: white;
     color: black;
     font-size: 12px;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     text-align: center;
     border-radius: 5px;
     padding: 5px 5px;
@@ -328,6 +388,7 @@ width: 100%;
     opacity: 1;
     visibility: visible;
 }
+
 /*
 * Shape helper
 */

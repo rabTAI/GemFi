@@ -40,7 +40,7 @@
     <section class="py-3 welcome-container">
         <div class="col-12 col-lg-12 p-3 p-md-3">
             <div class="row justify-content-between">
-                <div class="stat-container mx-2 col-lg-4 p-3 p-md-3 text-white">
+                <div class="stat-container col-lg-4 p-3 p-md-3 text-white">
                     <h5 class="mb-5 title text-center">Game Stats</h5>
                     <div id="stat1" class="stats1"></div>
                 </div>
@@ -59,11 +59,12 @@
                         <div id="loader" class="loader hide-loader"></div>
                     </div>
                 </div>
-                <div class="stat-container2 mx-2 col-lg-4 p-3 p-md-3 text-white text-center">
+                <div class="stat-container2 col-lg-4 p-3 p-md-3 text-white text-center">
                     <h5 class="mb-5 title text-center">Gem Pot Board</h5>
                     <div id="stat2" class="stats2 pb-5 mb-3"></div>
                     <div class="pickWinner text-center mt-3 mb-3">
-                        <button id="win" hidden disabled class="mintButton-outline btn-sm" onclick="pickWinner()" role="button">Pick
+                        <button id="win" hidden disabled class="mintButton-outline btn-sm" onclick="pickWinner()"
+                            role="button">Pick
                             Winner</button>
                     </div>
                 </div>
@@ -75,84 +76,89 @@
         <div class="col-12 col-lg-12 col-sm-12 p-3 p-md-3">
             <div class="row justify-content-between">
                 <!-- ======= Mint Section ======= -->
-                <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-md-5">Mint GEM</h3>
-                    <div class="input-group justify-content-center">
-                        <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
-                        <input type="number" id="input" value="3" placeholder="3" readonly>
-                        <button id="increment"><i class="fas fa-plus fa-xs"></i></button>
-                    </div>
-                    <div class="justify-content-center">
-                        <p class="text-center text-white pt-3">Mint price: 1 FTM => Gem Balance</p>
-                        <button class="mintButton-outline btn-lg rounded-pill mb-3" onclick="mintWrapper()"
-                            role="button">MINT</button>
+                <div class="col-lg-4">
+                    <div class="base-container py-3 mb-3 mx-2 text-center justify-content-center">
+                        <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-5">Mint GEM</h3>
+                        <div class="input-group justify-content-center">
+                            <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
+                            <input type="number" id="input" value="3" placeholder="3" readonly>
+                            <button id="increment"><i class="fas fa-plus fa-xs"></i></button>
+                        </div>
+                        <div class="justify-content-center">
+                            <p class="text-center text-white pt-3">Mint price: 1 FTM => Gem Balance</p>
+                            <button class="mintButton-outline btn-lg rounded-pill mb-3" onclick="mintWrapper()"
+                                role="button">MINT</button>
+                        </div>
                     </div>
 
                     <!-- Withdraw -->
-                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-5 mb-md-5">Withdraw
-                        <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
-                            <a style="pointer-events: none;" href="">
-                                <i class="bi bi-info-square info"></i></a></span>
-                    </h3>
-                    <div id="withdrawBalance" class="withdrawBalance btn-group">
-                        <div class="dropdown btn-group">
-                            <button class="btn btn-light dropdown-toggle" style="width: 50%;" type="button"
-                                id="dropdownMenuButtonWithdraw" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                Select a GEM
-                            </button>
-                            <ul class="dropdown-menu" id="dropdownWithdraw">
-                            </ul>
+                    <div class="base-container py-3 mx-2 text-center justify-content-center">
+                        <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-5">Withdraw
+                            <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
+                                <a style="pointer-events: none;" href="">
+                                    <i class="bi bi-info-square info"></i></a></span>
+                        </h3>
+                        <div id="withdrawBalance" class="withdrawBalance btn-group">
+                            <div class="dropdown btn-group">
+                                <button class="btn btn-light dropdown-toggle" style="width: 50%;" type="button"
+                                    id="dropdownMenuButtonWithdraw" data-bs-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    Select a GEM
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownWithdraw">
+                                </ul>
+                            </div>
+                            <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()"
+                                role="button">GO</button>
                         </div>
-                        <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()"
-                            role="button">GO</button>
                     </div>
                 </div>
-                <div class="col-lg-3 base-container gemContainer py-3 mb-2 mx-2 text-center justify-content-center">
-                    <div id="gemImage1" class="gemImage"></div>
-                    <div id="gemImage2" class="gemImage"></div>
-                    <div id="gemImage3" class="gemImage"></div>
+                <div class="col-lg-3 justify-content-center" style="display:flex;">
+                <div class="gemContainer text-center justify-content-center">
+                    <div id="gemImage1" class="gemBox"></div>
+                    <div id="gemImage2" class="gemBox"></div>
+                    <div id="gemImage3" class="gemBox"></div>
+                </div>
                 </div>
                 <!-- ======= Upgrade Section ======= -->
-                <div class="col-lg-4 base-container py-3 mb-2 mx-2 text-center justify-content-center">
-                    <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-md-5">Upgrade GEM</h3>
+                <div class="col-lg-4">
+                    <div class="base-container py-3 mx-2 text-center justify-content-center" style="height: 32rem;">
+                        <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-5">Upgrade GEM</h3>
 
-                    <div class="selectGems">
-                        <div class="button-group">
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    1st Gem
-                                </button>
-                                <ul class="dropdown-menu" id="dropdownMenu1">
-                                </ul>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    2nd Gem
-                                </button>
-                                <ul class="dropdown-menu" id="dropdownMenu2">
-                                </ul>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    3rd Gem
-                                </button>
-                                <ul class="dropdown-menu" id="dropdownMenu3">
-                                </ul>
+                        <div class="selectGems">
+                            <div class="button-group">
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 1st Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu1">
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 2nd Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu2">
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 3rd Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu3">
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="justify-content-center">
-                        <p class="text-center text-white ">Upgrade price: 0 FTM</p>
+                        <div class="justify-content-center">
+                            <p class="text-center text-white ">Upgrade price: 0 FTM</p>
 
-                        <button class="mintButton-outline btn-lg rounded-pill mt-2 mb-3" onclick="upgradeWrapper()"
-                            role="button">Upgrade</button>
-
-                        <div class="" id="balance"></div>
+                            <button class="mintButton-outline btn-lg rounded-pill mt-2 mb-3" onclick="upgradeWrapper()"
+                                role="button">Upgrade</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -172,9 +178,9 @@
         </div>
     </section> -->
     <!-- Content section About Project-->
-    <section id="scroll" class="py-3 welcome-container">
+    <section id="scroll" class="py-3 about-container">
         <div class="col-12 col-lg-12 p-3 p-md-3">
-            <div class=" row justify-content-center ">
+            <div class=" row justify-content-center">
                 <div class="col-lg-12 px-5 py-3">
                     <h2 class="font-weight-bold text-white subheading text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
                     <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a
@@ -207,7 +213,8 @@
                                 Board</li>
                         </p>
                         <p class="mt-0">
-                            <li class="text-white" style="padding-left:50px;">Any eligible user from leader board can call the pickWinner function
+                            <li class="text-white" style="padding-left:50px;">Any eligible user from leader board can
+                                call the pickWinner function
                                 every 24hr.</li>
                         </p>
 

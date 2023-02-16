@@ -765,7 +765,7 @@ async function contractCreationTime() {
 async function reloadStats() {
 	if (nftContract) {
 		sendAlert("Updating...Stats...");
-		document.getElementById("loader").classList.toggle("hide-loader");
+		document.getElementById("loader").classList.remove("hide-loader");
 
 		try {
 			var stat = document.getElementById("stat1").innerHTML;
@@ -834,41 +834,83 @@ async function reloadStats() {
 		} catch (err) {
 			console.log("Game Stat Error\n" + err);
 		}
-		document.getElementById("loader").classList.toggle("hide-loader");
+		document.getElementById("loader").classList.add("hide-loader");
+		sendAlert("Stats Ready");
+		console.log("Stats Ready");
 	}
 }
-/* ----------------------------
+/* ----------------------------;l..;l
 *	Owned Gem
 * ----------------------------*/
-async function getOwned(index, nft) {
+async function getOwnedAsync(index, callback) {
 
 	/* Token of owner Method*/
-	var tokenId = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, index).call(); //get token
-	var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
-	/* Paintswap method */
-	// var tokenId = nft.tokenId; //paintswap method
-	// var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
-
-	//=============//
+	try {
+		var tokenId = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, index).call(); //get token
+		var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
+	} catch (e) {
+		console.log("error: getting token", e)
+		callback(e);
+	}
 	//add to array
 	var obj = { token: tokenId, level: gemStatus.level, balance: gemStatus.balance };
 	ownedNFts.push(obj);
 
-	return obj;
+	callback(null, obj);
+}
+async function getOwned(bal) {
+
+	for (let i = 0; i < bal; i++) {
+		var tokenId = await nftContract.methods.tokenOfOwnerByIndex(currentAddr, i).call(); //get token
+		var gemStatus = await nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
+
+		const obj = { token: tokenId, level: gemStatus.level, balance: gemStatus.balance };
+		ownedNFts.push(obj);
+		// console.log(obj);
+	}
+	ownedNFts.sort((a, b) => a.token - b.token);
+}
+async function getOwnedPaintSwap(bal) {
+	////===========paintSwap method=============//
+	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
+		&orderBy=lastTransferTimestamp&orderDirection=desc&collections=${contAddress
+		}`)
+		.catch(err => {
+			console.log("Error fetching from paintswap: " + err)
+		});
+	var nfts = await response.json();
+
+	var htmlText = '';
+	nfts.forEach(nft => {
+		var tokenId = nft.tokenId; //paintswap method
+		var gemStatus = nftContract.methods.gemStatus(tokenId).call(); //get the status of gem from token
+		//getImage
+
+		//add to array
+		var obj = { token: tokenId, level: gemStatus.level, balance: gemStatus.balance };
+		ownedNFts.push(obj);
+
+		htmlText += '<li class="dropdown-item">Gem #' + obj.token + ' :Lvl ' + obj.level + ' :Bal ' + obj.balance / 1e18 + '</li>\n';
+	})
+	return htmlText;
 }
 /* ----------------------------
 *	Show Image of GEM
 * ----------------------------*/
 async function showImage(num, token) {
-	var gemContainer = document.getElementById("myGemImage" + num).innerHTML;
+	var gem = document.getElementById("gemImage" + num);
+	gemContainer = '';
 
 	try {
 		var uri = await nftContract.methods.tokenURI(token).call();
 		await fetch(uri)
 			.then(res => res.json())
 			.then(data => {
-				console.log(data);
-				gemContainer += '<img class="gem" src="' + data.image + '">\n';
+				// console.log(data);
+				gemContainer += '<div id="myGemImage' + num + '" class="myGemImage">\n';
+				gemContainer += '<img class="gem" src="' + data.image + '"></div>\n';
+				gemContainer += '<p class="m-0 p-small text-center text-white">#' + token + '</p>\n';
+				document.getElementById("gemImage" + num).innerHTML = gemContainer;
 			})
 			.catch(err => {
 				console.log("error: " + err)
@@ -880,12 +922,12 @@ async function showImage(num, token) {
 }
 
 async function dropDownSetup() {
-	ownedNFts.length = 0;
-
+	sendAlert("...Getting Owned Gems...");
+	// console.log("...Getting Owned Gems...");
 	//reset droptext
-	document.getElementById("dropdownMenuButton1").textContent = '1st Gem';
-	document.getElementById("dropdownMenuButton2").textContent = '2nd Gem';
-	document.getElementById("dropdownMenuButton3").textContent = '3rd Gem';
+	document.getElementById("dropdownMenuButton1").textContent = 'Select 1st Gem';
+	document.getElementById("dropdownMenuButton2").textContent = 'Select 2nd Gem';
+	document.getElementById("dropdownMenuButton3").textContent = 'Select 3rd Gem';
 	document.getElementById("dropdownMenuButtonWithdraw").textContent = 'Select a GEM';
 	//Preparing dropdown
 	var one = document.getElementById("dropdownMenu1");
@@ -895,34 +937,24 @@ async function dropDownSetup() {
 
 	var htmlWD = '';
 
+	ownedNFts.length = 0;
 	try {
 		bal = await nftContract.methods.balanceOf(currentAddr).call();
 		// console.log("balance " + bal);
+		await getOwned(bal);
 
-		////===========paintSwap method=============//
-		// 	var response = await fetch(`https: //api.paintswap.finance/v2/userNFTs?numToSkip=0&numToFetch=${bal}&user=${currentAddr}
-		// &orderBy=lastTransferTimestamp&orderDirection=desc&collections=${contAddress
-		// 		}`)
-		// 		.catch(err => {
-		// 			console.log("error: " + err)
-		// 		});
-		// 	var nfts = await response.json();
-
+		// ====//get owned by index method=================================================//
 		for (let i = 0; i < bal; i++) {
-			var nft = await getOwned(i); //get owned by index method
+			var obj = ownedNFts[i];
 			//dropdown menu
-			htmlWD += '<option class="dropdown-item">Gem #' + nft.token + ' :Lvl ' + nft.level + ' :Bal ' + nft.balance / 1e18 + '</option>\n';
-			//========================//
-			// var nft = getOwned(nfts[i]); //get owned by index method
-			// //dropdown menu
-			// htmlWD += '<option class="dropdown-item">Gem #' + nft.tokenId + ' :Lvl ' + nftStat.level + ' :Bal ' + nftStat.balance / 1e18 + '</option>\n';
+			htmlWD += '<li class="dropdown-item">Gem #' + obj.token + ' :Lvl ' + obj.level + ' :Bal ' + obj.balance / 1e18 + '</li>\n';
 		}
+		// ====//paint Swap=================================================//
+		// htmlWD = await getOwnedPaintSwap(bal);
 		one.innerHTML = htmlWD;
 		two.innerHTML = htmlWD;
 		three.innerHTML = htmlWD;
 		withD.innerHTML = htmlWD;
-
-		dropDownListener();
 	}
 	catch (error) {
 		console.log("Get owned gem error:", error);
@@ -932,38 +964,38 @@ async function dropDownSetup() {
 /* ----------------------------
 *	Dropdown menu setup
 * ----------------------------*/
-async function dropDownListener() {
+function dropDownListener() {
 
 	//Add listeners
-	$('#dropdownMenu1 option').on('click', function () {
+	$('#dropdownMenu1 li').on('click', function () {
 		// console.log($(this).html());
+		$("dropdownMenu1").collapse("hide");
 		document.getElementById("dropdownMenuButton1").textContent = $(this).html();
 		preventDupes();
 
-		// var token = parseDropSelection($(this).html());
-		// showImage(1, token);
+		var token = parseDropSelection($(this).html(), '#', ' :Lvl');
+		showImage(1, token);
 	});
 
-	$('#dropdownMenu2 option').on('click', function () {
+	$('#dropdownMenu2 li').on('click', function () {
 		//console.log($(this).html());
 		document.getElementById("dropdownMenuButton2").textContent = $(this).html();
 		preventDupes();
 
-		// var token = parseDropSelection($(this).html());
-		// showImage(2, token);
-
+		var token = parseDropSelection($(this).html(), '#', ' :Lvl');
+		showImage(2, token);
 	});
 
-	$('#dropdownMenu3 option').on('click', function () {
+	$('#dropdownMenu3 li').on('click', function () {
 		// console.log($(this).html());
 		document.getElementById("dropdownMenuButton3").textContent = $(this).html();
 		preventDupes();
 
-		// var token = parseDropSelection($(this).html());
-		// showImage(3, token);
+		var token = parseDropSelection($(this).html(), '#', ' :Lvl');
+		showImage(3, token);
 	});
 
-	$('#dropdownWithdraw option').on('click', function () {
+	$('#dropdownWithdraw li').on('click', function () {
 		document.getElementById("dropdownMenuButtonWithdraw").textContent = $(this).html();
 	});
 	// console.log("Dropdown ready");
@@ -978,39 +1010,39 @@ function preventDupes() {
 	var selectThree = document.getElementById("dropdownMenuButton3").innerHTML;
 
 	// var optionsCurr = current.getElementsByTagName('option');
-	var options1 = document.getElementById("dropdownMenu1").getElementsByTagName('option');
-	var options2 = document.getElementById("dropdownMenu2").getElementsByTagName('option');
-	var options3 = document.getElementById("dropdownMenu3").getElementsByTagName('option');
+	var options1 = document.getElementById("dropdownMenu1").getElementsByTagName('li');
+	var options2 = document.getElementById("dropdownMenu2").getElementsByTagName('li');
+	var options3 = document.getElementById("dropdownMenu3").getElementsByTagName('li');
 	// console.log(options1);
 
 	for (let i = 0; i < options1.length; i++) {
 		options1[i
-		].disabled = false;
+		].classList.remove("disabled");
 		options2[i
-		].disabled = false;
+		].classList.remove("disabled");
 		options3[i
-		].disabled = false;
+		].classList.remove("disabled");
 
 		if (options1[i
 		].textContent == selectOne || options1[i
 		].textContent == selectTwo || options1[i
 		].textContent == selectThree) {
 			options1[i
-			].disabled = true;
+			].classList.add("disabled");
 		}
 		if (options2[i
 		].textContent == selectOne || options2[i
 		].textContent == selectTwo || options2[i
 		].textContent == selectThree) {
 			options2[i
-			].disabled = true;
+			].classList.add("disabled");
 		}
 		if (options3[i
 		].textContent == selectOne || options3[i
 		].textContent == selectTwo || options3[i
 		].textContent == selectThree) {
 			options3[i
-			].disabled = true;
+			].classList.add("disabled");
 		}
 	}
 	// options1[index - 1].disabled = true;
@@ -1018,26 +1050,20 @@ function preventDupes() {
 }
 
 async function updateData() {
-	document.getElementById("loader").classList.toggle("hide-loader");
-	sendAlert("...Getting Owned Gems...");
-	await dropDownSetup();
-	document.getElementById("loader").classList.toggle("hide-loader");
-
-	await reloadStats();
-	sendAlert("Ready");
-}
-/* ----------------------------
-*	Game Stats
-* ----------------------------*/
-async function getDataContract() {
 	try {
-		await updateData();
-		console.log("Ready");
+		document.getElementById("loader").classList.remove("hide-loader");
+		await dropDownSetup();
+		await reloadStats();
+		document.getElementById("loader").classList.add("hide-loader");
+		dropDownListener();
+		sendAlert("Dropdown Ready");
+		console.log("Dropdown Ready");
 	} catch (e) {
 		console.log(e);
 		sendAlert("Error getting data. Please reload", red)
 	}
 }
+
 function parseError(err) {
 	var text = err + '';
 	var error = text.slice(text.indexOf('{') - 1, text.lastIndexOf('}') + 1);
@@ -1070,7 +1096,7 @@ $(document).ready(function () {
 	loadWeb3();
 })
 window.addEventListener('contractLoaded', () => {
-	getDataContract();
+	updateData();
 });
 
 $('#connectButton').click(function () {
