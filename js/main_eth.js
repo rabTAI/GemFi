@@ -415,9 +415,11 @@ async function loadWeb3() {
 	if (window.ethereum) {
 		web3 = new Web3(window.ethereum)
 
+		setChainListener(window.ethereum);
+		setAccListener(window.ethereum);
+
 		var chainID = await web3.eth.net.getId();
 		console.log('Connected to chain ' + chainID)
-
 		if (chainID == 0xfa2) { //main 250, test 0xfa2
 			await connect();
 			await loadContracts();
@@ -443,8 +445,7 @@ async function loadContracts() {
 /* ----------------------------
 *	get Mint token from trxn
 * ----------------------------*/
-async function getMintTokenID(tx) {
-
+async function getMintTokenID(tx, num) {
 	var interval1 = setInterval(function a() {
 		var newMints = [];
 		nftContract.events.Transfer({ fromBlock: tx.blockNumber }, function (error, events) { })
@@ -454,8 +455,8 @@ async function getMintTokenID(tx) {
 				if (!newMints.includes(jj)) {
 					newMints.push(jj);
 				}
-				if (newMints.length == 3) {
-					sendAlertPerm("New Minted Gem #" + JSON.stringify(newMints));
+				if (newMints.length == num) {
+					sendAlertPerm("New Minted Gem" + JSON.stringify(newMints));
 					clearInterval(interval1);
 				}
 			});
@@ -488,7 +489,7 @@ async function mint(mintAmount) {
 							clearInterval(interval);
 							updateData();
 							try {
-								getMintTokenID(rec);
+								getMintTokenID(rec, mintAmount);
 							} catch (e) {
 								console.log("Error getting mint Id:", e);
 							}
@@ -671,7 +672,7 @@ async function winnerStatus(tx) {
 	var interval = setTimeout(function a() {
 		var winner = 0;
 
-		nftContract.events.WinnerSelected({ fromBlock: tx.blockNumber }, function (error, events) { })
+		nftContract.events.WinnerPicked({ fromBlock: tx.blockNumber }, function (error, events) { })
 			.on('data', function (events) {
 				console.log(events.returnValues);
 				winner = events.returnValues.gemId
@@ -681,18 +682,20 @@ async function winnerStatus(tx) {
 			});
 	}, 3000);
 }
-async function checkEligibility() {
+function checkEligibility() {
+	var token = 0;
+
 	if (gemPotEligible.length == 0) {
-		return 0
+		return 0;
 	} else if (ownedNFts.length == 0) {
 		return 0;
 	} else {
-		ownedNFts.forEach(obj => {
-			if (gemPotEligible.includes(obj.token)) {
-				return obj.token;
+		for (i = 0; i < ownedNFts.length; i++)
+			if (gemPotEligible.includes(ownedNFts[i].token)) {
+				token = ownedNFts[i].token;
+				break;
 			}
-		});
-		return 0;
+		return token;
 	}
 }
 /* ----------------------------
@@ -700,12 +703,12 @@ async function checkEligibility() {
 * ----------------------------*/
 async function pickWinner() {
 	console.log("pick winner");
-	var eligible = await checkEligibility();
+	var eligible = checkEligibility();
 
 	if (eligible != 0) {
 		await nftContract.methods.pickWinner(eligible).send({
 			from: currentAddr,
-			value: 0,
+			value: 0
 		}, function (hash) {
 			console.log("Transaction sent!", hash);
 			const interval = setInterval(function () {
@@ -789,27 +792,28 @@ async function reloadStats() {
 
 			var lastWinner = await nftContract.methods.lastWinner().call();
 			//console.log(lastWinner);
-			var lastWinnerAdd;
+			// var lastWinnerAdd;
 			if (lastWinner == 0) {
-				lastWinnerAdd = 'None';
+				lastWinner = 'None';
 			}
-			else {
-				lastWinnerAdd = await nftContract.methods.ownerOf(lastWinner).call();
-				lastWinnerAdd = lastWinnerAdd.replace(lastWinnerAdd.substring(5,
-					38),
-					"***")
-			}
-			stat += '<table class="table text-white mb-0"><tbody><tr><td>Active Supply: </td><td>' + activeSupply + '</td>\n';
-			stat += '<tr><td>Highest Level: </td><td>' + highestLevel + '</td></tbody>\n';
-			stat += '<tbody><tr><td>Pot Balance: </td><td>' + gemPot / 1e18 + ' FTM</td>\n';
-			stat += '<tr><td>Last Draw: </td><td>' + lastDrawDate + '</td>\n';
-			stat += '<tr><td>Last Winner: </td><td> ' + lastWinnerAdd + '</td>\n';
-			stat += '<tr><td>Owned Gems: </td><td>' + bal + '</td ></tbody ></table >\n';
+			// else {
+			// 	lastWinnerAdd = await nftContract.methods.ownerOf(lastWinner).call();
+			// 	lastWinnerAdd = lastWinnerAdd.replace(lastWinnerAdd.substring(5,
+			// 		38),
+			// 		"***")
+			// }
+			stat += '<table class="table text-white mb-0"><tbody><tr><td>Active Supply:</td><td>' + activeSupply + '</td>\n';
+			stat += '<tr><td>Highest Level:</td><td>' + highestLevel + '</td></tbody>\n';
+			stat += '<tbody><tr><td>Pot Balance:</td><td>' + gemPot / 1e18 + ' FTM</td>\n';
+			stat += '<tr><td>Last Draw:</td><td>' + lastDrawDate + '</td>\n';
+			stat += '<tr><td>Last Winner:</td><td>Gem #' + lastWinner + '</td>\n';
+			stat += '<tr><td>Owned Gems:</td><td>' + bal + '</td ></tbody ></table >\n';
 
 			gemPotEligible = [];
+			// console.log(currentTime, lastDraw, freq);
 
+			var msg = '';
 			var getTotalHighLevelGems = await nftContract.methods.getTotalHighLevelGems().call();
-
 			if (getTotalHighLevelGems > 0) {
 				for (let i = 0; i < getTotalHighLevelGems; i++) {
 					var highestLevelGems = await nftContract.methods.highestLevelGems(i).call();
@@ -821,14 +825,25 @@ async function reloadStats() {
 					// var status = await nftContract.methods.gemStatus(highestLevelGems);
 
 					gemPotEligible.push(highestLevelGems);
-					stat2 += '<p>Gem #' + highestLevelGems + '</p\n'
+					msg += '<p>Gem #' + highestLevelGems + '</p>\n'
 				}
-				document.getElementById("win").removeAttribute("hidden");
-				document.getElementById("win").removeAttribute("disabled");
+				var freq = await nftContract.methods.winnerPickDuration().call();
+				var block = await web3.eth.getBlock("latest");
+				var currentTime = block.timestamp;
+
+				if (currentTime > (lastDraw + (freq * 3600))) {
+					document.getElementById("win").classList.remove("disabled");
+				} else {
+					msg += '<p></p><p>Pick winner is not ready yet!</p>\n';
+					document.getElementById("win").classList.add("disabled");
+				}
 			} else {
-				stat2 += 'Not ready yet!';
-				document.getElementById("win").setAttribute("disabled", true);
+				msg = '<p>No eligible gems in the pot</p>\n';
+				document.getElementById("win").classList.add("disabled");
 			}
+			stat2 += msg;
+			document.getElementById("win").removeAttribute("hidden");
+
 			document.getElementById("stat1").innerHTML = stat;
 			document.getElementById("stat2").innerHTML = stat2;
 		} catch (err) {
@@ -1095,6 +1110,7 @@ function sendAlertPerm(message, red) {
 $(document).ready(function () {
 	loadWeb3();
 })
+
 window.addEventListener('contractLoaded', () => {
 	updateData();
 });
@@ -1102,3 +1118,13 @@ window.addEventListener('contractLoaded', () => {
 $('#connectButton').click(function () {
 	connect();
 });
+
+const setAccListener = (ethereum) => {
+	ethereum.on("accountsChanged", connect);
+}
+const setChainListener = (ethereum) => {
+	ethereum.on("chainChanged", pageReload);
+}
+function pageReload() {
+	window.location.reload();
+}
