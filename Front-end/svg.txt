@@ -1,0 +1,66 @@
+item[0] = '<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 600 800" width="300" height="400">';
+
+item[1] = '<defs><linearGradient id = "gradient" x1 = "0%" y1 = "0%" x2 = "100%" y2 = "80%" ><stop offset="0%" style="stop-color:rgb(0,38,249);stop-opacity:1" /><stop offset="100%" style="stop-color:rgb(10,36,114);stop-opacity:0.7" /></linearGradient ><linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="80%"><stop offset="0%" style="stop-color:rgb(143,217,248);stop-opacity:1" /><stop offset="100%" style="stop-color:rgb(10,36,114);stop-opacity:0.9" /></linearGradient><linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:rgb(146, 165, 247);stop-opacity:1" /><stop offset="100%" style="stop-color:rgb(0,38,249);stop-opacity:0.5" /></linearGradient></defs >';
+
+item[2]=' <ellipse cx="150" cy="200" rx="150" ry="200"
+  style="fill:rgb(0, 5, 107);opacity:1" />
+  <ellipse cx="150" cy="200" rx="150" ry="200"
+  style="fill:url(#gradient);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:1" />';
+
+item[3]='<polygon points="3,170 80,150 17,110 52,50 60,100 " style="fill:rgb(0,38,249);opacity:0.5" />
+<polygon points="52,350 80,300 7,250 60,200 3,170" style="fill:rgb(0,38,249);opacity:0.5" />
+<polygon points="297,170 220,150 283,110 248,50 240,100 " style="fill:rgb(0,38,249);opacity:0.5" />
+<polygon points="248,350 220,300 293,250 240,200 297,170" style="fill:rgb(0,38,249);opacity:0.5" />
+<polygon points="52,50 100,15 150,50 100,70" style="fill:rgb(0, 5, 107);opacity:1" />
+<polygon points="150,50 200,15 248,50 200,70" style="fill:rgb(0, 5, 107);opacity:1" />
+<polygon points="52,350 100,385 150,350 100,330" style="fill:rgb(0,28,85);opacity:1" />
+<polygon points="150,350 200,385 248,350 200,330" style="fill:rgb(0,28,85);opacity:1" />
+<polygon points="80,25 90,100 150,0 210,100 220,25" style="fill:rgb(0,38,249);opacity:0.7" />
+<polygon points="80,375 90,300 150,400 210,300 220,375" style="fill:rgb(0,38,249);opacity:0.5" />
+<polygon points="150,50 60,100 60,300 150,350 240,300 240,100" style="fill:rgb(0,38,249);opacity:1;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+';
+
+item[4]='
+<polygon points="90,50 60,100 240,100 210,50 150,50" style="fill:url(#gradient1);opacity:0.9;stroke:white;stroke-width:2;stroke-opacity:0.3" />
+<polygon points="90,350 60,300 240,300 210,350 150,350" style="fill:url(#gradient1);opacity:0.8;stroke:white;stroke-width:2;stroke-opacity:0.3" />
+<polygon points="60,100 30,150 60,200 30,250 60,300" style="fill:rgb(143,217,248);opacity:0.7;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="240,100 270,150 240,200 270,250 240,300" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="100,50 80,140 25,200 80,260 100,350 275,200" style="fill:rgb(10,36,114);opacity:0.5" />
+<polygon points="180,100 150,50 120,100 60,100 80,150 60,200 80,250 60,300 120,300 150,350 180,300 240,300 220,250 240,200 220,150 240,100" style="fill:url(#gradient1);opacity:0.6" />
+<polygon points="90,50 60,100 20,100 90,50 100,13 150,50" style="fill:rgb(143,217,248);opacity:0.7" />
+<polygon points="50,115 60,165 7,140 0,200" style="fill:rgb(179, 213, 255);opacity:0.5" />
+<polygon points="0,200 30,250 20,300" style="fill:rgb(179, 213, 255);opacity:0.5" />
+<polygon points="90,350 60,300 20,300 90,350 100,387 150,350" style="fill:url(#gradient2);opacity:0.8" />
+<polygon points="210,50 240,100 280,100 210,50 200,13 150,50" style="fill:url(#gradient1);opacity:0.7" />
+<polygon points="250,115 240,165 293,140 300,200" style="fill:rgb(179, 213, 255);opacity:0.5" />
+<polygon points="300,200 270,250 280,300" style="fill:rgb(179, 213, 255);opacity:0.5" />
+<polygon points="210,350 240,300 280,300 210,350 200,387 150,350" style="fill:url(#gradient1);opacity:0.7" />
+<polygon points="150,0 100,15 150,50" style="fill:rgb(143,217,248);opacity:0.7" />
+<polygon points="180,100 120,100 80,150 80,250 120,300 180,300 220,250 220,150" style="fill:url(#gradient);opacity:1" />
+<polygon points="150,50 60,100 60,300 150,350 240,300 240,100" style="fill:url(#gradient1);opacity:0" />
+<ellipse cx="150" cy="200" rx="150" ry="200" style="fill:rgb(0,38,249);opacity:0.2" />
+<polygon points="150,50 60,100 150,150 240,100" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="150,150 60,200 150,250" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="150,150 150,250 240,200" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="60,300 150,350 240,300 240,200 150,250 60,200" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="60,100 150,150 60,200" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />
+<polygon points="240,100 150,150 240,200" style="fill:rgb(143,217,248);opacity:0.5;stroke:white;stroke-width:2;stroke-opacity:0.5" />';
+
+        item[5] = string(
+                    abi.encodePacked(
+                        '<text x="150" y="95" style="fill:white;opacity:0.6;font-size:20px" text-anchor="middle">GemFi<tspan x="150" y="270" text-anchor="middle">Level:</tspan>
+    <tspan text-anchor="middle">',
+                        toString(gem[_gemId].level),
+                        '</tspan>'
+                    )
+           );
+
+        item[6] = string(
+                    abi.encodePacked(
+                        '<tspan x="150" y="295" text-anchor="middle">Balance:</tspan><tspan text-anchor="middle">',
+                        toString(gem[_gemId].balance/1000000000000000000), 
+                        '</tspan>'
+                    )
+           );
+
+item[7]='</text></svg>';

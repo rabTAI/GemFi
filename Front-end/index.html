@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>GEM-FI</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="./src/assets/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap" rel="stylesheet">
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link href="./src/assets/css/styles.css" rel="stylesheet" />
+    <link href="./src/assets/css/myStyles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Responsive navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-Blue">
+        <div class="container">
+            <a class="navbar-brand logo" href="index.html">GemFi</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link mx-3 sub-title" href="#scroll">About</a></li>
+                    <li class="nav-item"><a class="nav-link mx-3"><button id="connectButton"
+                                class="btn myButton-outline btn-sm rounded-pill">Connect</button></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Header - Welcome Container-->
+    <section class="py-3 welcome-container">
+        <div class="col-12 col-lg-12 p-3 p-md-3">
+            <div class="row justify-content-between">
+                <div class="stat-container col-lg-4 p-3 p-md-3 text-white">
+                    <h5 class="mb-5 title text-center">Gem Stats</h5>
+                    <div id="stat1" class="stats1"></div>
+                </div>
+                <div class="fixed-container col-lg-3 text-center">
+                    <!-- <img class="img-fluid rounded-circle mb-4" src="./assets/img/logo.png" alt="..." /> -->
+                    <h1 class="text-white heading">GemFi</h1>
+                    <p class="text-white mb-0 subheading">Will Rock Your Life</p>
+                    <a class="btn myButton btn-xl rounded-pill mt-3 sub-title" href="#scroll">Learn More</a>
+                    <div class="justify-content-center mt-5">
+                        <div id="alert" class="alert mt-3">
+                            <p class="sub-title text-white">Alerts</p>
+                            <p id="alert-perm" class="alert-perm text-white text-bold mb-0 p-small">
+                            <p>
+                            <p id="alert-txt" class="text-white mb-0 p-small alert-txt"></p>
+                        </div>
+                        <div id="loader" class="loader hide-loader"></div>
+                    </div>
+                </div>
+                <div class="stat-container2 col-lg-4 p-3 p-md-3 text-white text-center">
+                    <h5 class="mb-5 title text-center">Gem Pot Board</h5>
+                    <div id="stat2" class="stats2 mb-3"></div>
+                    <div class="pickWinner text-center mt-3 mb-3">
+                        <button id="win" hidden class="mintButton-outline btn-sm disabled" onclick="pickWinner()">Pick
+                            Winner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Content section Web3 Interaction-->
+    <section class="py-3 mb-0 bg-image-full">
+        <div class="col-12 col-lg-12 col-sm-12 p-3 p-md-3">
+            <div class="row justify-content-between">
+                <!-- ======= Mint Section ======= -->
+                <div class="col-lg-4">
+                    <div class="base-container py-3 mb-3 mx-2 text-center justify-content-center">
+                        <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-5">Mint GEM</h3>
+                        <div class="input-group justify-content-center">
+                            <button id="decrement"><i class="fas fa-minus fa-xs"></i></button>
+                            <input type="number" id="input" value="3" placeholder="3" readonly>
+                            <button id="increment"><i class="fas fa-plus fa-xs"></i></button>
+                        </div>
+                        <div class="justify-content-center">
+                            <p class="text-center text-white pt-3">Mint price: 1 FTM => Gem Balance</p>
+                            <button class="mintButton-outline btn-lg rounded-pill mb-3" onclick="mintWrapper()"
+                                role="button">MINT</button>
+                        </div>
+                    </div>
+
+                    <!-- Withdraw -->
+                    <div class="base-container py-3 mx-2 text-center justify-content-center">
+                        <h3 class="font-weight-bold title text-center text-white p-0 m-0 mt-3 mb-5">Withdraw
+                            <span class="info-text" data-hover="Withdraw balance from a Gem ==> gem will be burned">
+                                <a style="pointer-events: none;" href="">
+                                    <i class="bi bi-info-square info"></i></a></span>
+                        </h3>
+                        <div id="withdrawBalance" class="withdrawBalance btn-group">
+                            <div class="dropdown btn-group">
+                                <button class="btn btn-light dropdown-toggle" type="button"
+                                    id="dropdownMenuButtonWithdraw" data-bs-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    Select a GEM
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownWithdraw">
+                                </ul>
+                            </div>
+                            <button class="mintButton-outline btn-lg rounded-end mb-3" onclick="withdrawWrapper()"
+                                role="button">GO</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 justify-content-center" style="display:flex;">
+                <div id="gemContainer" class="gemContainer text-center justify-content-center">
+                    <div id="gemImage1" class="gemBox"></div>
+                    <div id="gemImage2" class="gemBox"></div>
+                    <div id="gemImage3" class="gemBox"></div>
+                </div>
+                </div>
+                <!-- ======= Upgrade Section ======= -->
+                <div class="col-lg-4">
+                    <div class="base-container py-3 mx-2 text-center justify-content-center" style="height: 32rem;">
+                        <h3 class="font-weight-bold title text-white p-0 m-0 mt-3 mb-5">Upgrade GEM</h3>
+
+                        <div class="selectGems justify-content-center">
+                            <div class="button-group">
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 1st Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu1">
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton2"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 2nd Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu2">
+                                    </ul>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton3"
+                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Select 3rd Gem
+                                    </button>
+                                    <ul class="dropdown-menu" id="dropdownMenu3">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="justify-content-center">
+                            <p class="text-center text-white ">Upgrade price: 0 FTM</p>
+
+                            <button class="mintButton-outline btn-lg rounded-pill mt-2 mb-3" onclick="upgradeWrapper()"
+                                role="button">Upgrade</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Content section My GEM
+    <section id="myGems" class="container">
+        <div class="col-12 col-lg-12 p-3 p-md-3 mt-3">
+            <div class="row justify-content-center ">
+                <div id="myGem" hidden
+                    class="col-lg-12 base-container py-3 p-md-3 mx-2 text-center justify-content-center myGem">
+                    <h3 class="font-weight-bold title text-center text-white p-0 m-0 mb-3 mb-md-5">My GEM</h3>
+                    <div id="gemContainer" class="gemContainer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+    <!-- Content section About Project-->
+    <section id="scroll" class="py-3 about-container">
+        <div class="col-12 col-lg-12 p-3 p-md-3">
+            <div class=" row justify-content-center">
+                <div class="col-lg-12 px-5 py-3">
+                    <h2 class="font-weight-bold text-white subheading text-center p-0 m-0 mb-3 mb-md-5">About GemFI</h2>
+                    <h5 class="text-white text-center font-weight-bold">GemFI is GameFi involving SVG NFTs with a
+                        chance of winning the POT money</h5>
+
+                    <div class="col-lg-12 mt-5 px-5 py-2 text-container">
+                        <h5 class="mt-3 sub-title text-white mb-0">How to play?</h5>
+                        <p></p>
+                        <li class="text-white">Mint 3 Gem starting with level 1</li>
+                        <p></p>
+                        <li class="text-white">Upgrade 3 for 1 Gem with a chance of upgrade failing</li>
+                        <p></p>
+                        <li class=" text-white">Failed upgrade will mint 1 Gem with same level and balance</li>
+                        <p>
+                            <li class="text-white" style="padding-left:50px;">Balance from 2nd Gem paid to User</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Balance from 3rd Gem goes to Gem Pot</li>
+                        </p>
+
+                        <li class="text-white">Successful upgrade will mint 1 Gem with 3x Balance and +1 Level</li>
+                        <p>
+                            <li class="text-white" style="padding-left:50px;">Upgrade Gems to get higher level for entry
+                                on
+                                Gem Pot Board</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Winner of Gem pot picked randomly from Gem
+                                Pot
+                                Board</li>
+                        </p>
+                        <p class="mt-0">
+                            <li class="text-white" style="padding-left:50px;">Any eligible user from leader board can
+                                call the pickWinner function
+                                every 24hr.</li>
+                        </p>
+
+                    </div>
+                    <div class="col-lg-6"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer-->
+    <footer class="py-5 bg-Blue">
+        <div class="container">
+            <p class="text-white text-center font-weight-bold"><a class="text-white text-center font-weight-bold"
+                    href="https://twitter.com/rabTAI" target="_blank">rabTAI</a> (Solidity) &
+                <a class="text-white text-center font-weight-bold" href="https://twitter.com/ARTRoshuAngel"
+                    target="_blank">Roshu Angel</a> (Web)
+            </p>
+            <p class="m-0 text-center text-white">Copyright &copy; GemFI 2023</p>
+        </div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="./src/js/scripts.js"></script>
+    <script src="./src/js/main_eth.js"></script>
+</body>
+
+</html>
