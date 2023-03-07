@@ -28,7 +28,7 @@ struct gemProperty {
     address owner;
 }
 
-contract GemFi is ERC721Enumerable {
+contract test is ERC721Enumerable {
     using Strings for uint256;
     using Counters for Counters.Counter;
     Counters.Counter private supply;
@@ -42,26 +42,26 @@ contract GemFi is ERC721Enumerable {
     uint256 public collectedFee;
     uint256 public lastDraw = block.timestamp;
     uint256 public lastWinner;
-    uint256 public winnerPickDuration = 1;
+    uint256 public winnerPickDuration = 24;
 
     uint256[] public highestLevelGems;
     mapping(uint256 => uint256) private highestLevelGemsIndex;
     mapping(uint256 => mapping(uint256 => bool)) private gemIsHighestLevel;
 
     uint256 private mintChance;
-    uint256 private randomNumberIncreasement = 0;
 
     mapping(uint256 => gemProperty) private gem;
 
     uint256 public epochIndex = 1;
     mapping(uint256 => Epoch) private epochs;
-    uint256 randomIndexEpoch = 1;
+    uint256 private randomIndexEpoch;
 
     event GemUpgraded(bool trueOrFalse, uint256 gemId);
     event WinnerPicked(uint256 gemId);
 
-    constructor() ERC721("GemFi", "GMF") {
+    constructor() ERC721("test", "ttt") {
         owner = msg.sender;
+        resolveEpochIfNeeded();
     }
 
     modifier onlyOwner() {
@@ -209,27 +209,18 @@ contract GemFi is ERC721Enumerable {
         );
         supply.increment();
         uint256 _newTokenId = supply.current();
-        //Find mint chance based on the level
+        //Find mint chance based on the Gem level
         if (gem[_gemOne].level <= 10) {
             mintChance = 100 - 10 * (gem[_gemOne].level - 1);
         } else {
             mintChance = 1;
         }
-        uint256 _random = uint256(
-            keccak256(
-                abi.encodePacked(
-                    epochs[randomIndexEpoch].randomness,
-                    IRandomNumberGenerator(RANDOM).getRandomNumber()
-                )
-            )
-        );
-        _random = (_random & 0x64);
-        randomIndexEpoch++;
-        console.log("random mint change ", _random);
-        console.log("Mint Chance", mintChance);
-        if (_random <= mintChance) {
-            //Upgrade is successfull
-            console.log("new NFT", _newTokenId);
+        resolveEpochIfNeeded();
+        uint256 _randomNumber = getRandomNumber();
+        _randomNumber = (_randomNumber & 0x64);
+        if (_randomNumber <= mintChance) {
+            //if upgrade is successfull
+            //Burn all three gems and mint a new Gem with +1 level and combined balance of three gems
             gem[_newTokenId].level = gem[_gemOne].level + 1;
             gem[_newTokenId].balance = gem[_gemOne].balance * 3;
             if (gem[_newTokenId].level > highestGemLevel) {
@@ -248,51 +239,24 @@ contract GemFi is ERC721Enumerable {
             }
             emit GemUpgraded(true, _newTokenId);
         } else {
-            //If mint is unsuccessfull
+            //If upgrade is unsuccessfull
             //Burn three gems, create a new Gem with same balance and level
-            //Send back two Gems balance to user, and one gem balance to GemPot (Winner takes all)
-            //Mint new Gem
-            // _safeMint(msg.sender, _newTokenId);
+            //Send back one Gem's balance to user, and one Gem's balance to GemPot (Winner takes all)
             gem[_newTokenId].level = gem[_gemOne].level;
             gem[_newTokenId].balance = gem[_gemOne].balance;
             if (gemIsHighestLevel[highestGemLevel][_gemOne] == true) {
-                //     if(highestLevelGems.length==3){
-                //         delete highestLevelGems;
                 highestLevelGems.push(_newTokenId);
                 gemIsHighestLevel[highestGemLevel][_newTokenId] = true;
                 highestLevelGemsIndex[_newTokenId] =
                     highestLevelGems.length -
                     1;
             }
-            // }else{
-
-            // uint256 indexRemovedGem=highestLevelGemsIndex[_gemOne];
-            // uint256 lastIndex=highestLevelGems.length-1;
-            // highestLevelGems[indexRemovedGem]= highestLevelGems[lastIndex];
-            // highestLevelGems.pop();
-            // indexRemovedGem=highestLevelGemsIndex[_gemTwo];
-            // lastIndex=highestLevelGems.length-1;
-            // highestLevelGems[indexRemovedGem]= highestLevelGems[lastIndex];
-            // highestLevelGems.pop();
-            // indexRemovedGem=highestLevelGemsIndex[_gemThree];
-            // lastIndex=highestLevelGems.length-1;
-            // highestLevelGems[indexRemovedGem]= highestLevelGems[lastIndex];
-            // highestLevelGems.pop();
-            // }
-            // delete highestLevelGemsIndex[_gemOne];
-            // delete highestLevelGemsIndex[_gemTwo];
-            // delete highestLevelGemsIndex[_gemThree];
-            // }
-
-            //Send balances
             gamePot += gem[_newTokenId].balance;
             require(payable(msg.sender).send(gem[_newTokenId].balance));
             emit GemUpgraded(false, _newTokenId);
         }
         _safeMint(msg.sender, _newTokenId);
-        //Three burned, 1 created
         activeSupply += 1;
-        //Burn old level gems
         burnGem(_gemOne);
         burnGem(_gemTwo);
         burnGem(_gemThree);
@@ -311,27 +275,14 @@ contract GemFi is ERC721Enumerable {
                 highestLevelGems.length > 0,
             "Not ready yet"
         );
-        // require(
-        //     block.timestamp > (lastDraw + 10) && highestLevelGems.length > 0,
-        //     "Not ready yet"
-        // );
         require(
             msg.sender == ownerOf(_gemId) &&
                 gemIsHighestLevel[highestGemLevel][_gemId] == true,
             "Not in qualified list"
         );
-
-        uint256 _randomIndex = uint256(
-            keccak256(
-                abi.encodePacked(
-                    epochs[randomIndexEpoch].randomness,
-                    IRandomNumberGenerator(RANDOM).getRandomNumber()
-                )
-            )
-        );
-        randomIndexEpoch++;
-
-        uint256 winnerIndex = _randomIndex % highestLevelGems.length;
+        uint256 _randomNumber = getRandomNumber();
+        lastDraw = block.timestamp;
+        uint256 winnerIndex = _randomNumber % highestLevelGems.length;
         lastWinner = highestLevelGems[winnerIndex];
         require(payable(gem[winnerIndex].owner).send((gamePot * 90) / 100));
         collectedFee += (gamePot * 10) / 100;
@@ -356,7 +307,7 @@ contract GemFi is ERC721Enumerable {
 
     //** Supporting fucntions *
 
-    function burnGem(uint256 _gemId) internal {
+    function burnGem(uint256 _gemId) private {
         gem[_gemId].level = 0;
         gem[_gemId].balance = 0 ether;
         safeTransferFrom(
@@ -368,12 +319,27 @@ contract GemFi is ERC721Enumerable {
             uint256 indexRemovedGem = highestLevelGemsIndex[_gemId];
             uint256 lastIndex = highestLevelGems.length - 1;
             highestLevelGems[indexRemovedGem] = highestLevelGems[lastIndex];
+            highestLevelGemsIndex[
+                highestLevelGems[lastIndex]
+            ] = indexRemovedGem;
             highestLevelGems.pop();
             delete highestLevelGemsIndex[_gemId];
         }
         activeSupply -= 1;
     }
 
+    function getRandomNumber() private view returns (uint256 _randomNumber) {
+        _randomNumber = uint256(
+            keccak256(
+                abi.encodePacked(
+                    epochs[randomIndexEpoch].randomness
+                    // IRandomNumberGenerator(RANDOM).getRandomNumber()
+                )
+            )
+        );
+    }
+
+    //Thanks to @_MouseDev
     function resolveEpochIfNeeded() private {
         Epoch storage currentEpoch = epochs[epochIndex];
         if (
@@ -384,7 +350,6 @@ contract GemFi is ERC721Enumerable {
                 currentEpoch.revealBlock < block.number - 256)
         ) {
             //This means the epoch has not been commited, OR the epoch has commited but has expired
-
             //Set commited to true  and record the reveal block
             currentEpoch.revealBlock = uint64(block.number + 5);
             currentEpoch.commited = true;
@@ -395,12 +360,13 @@ contract GemFi is ERC721Enumerable {
                 uint256(blockhash(currentEpoch.revealBlock)) % (2**128 - 1)
             );
             currentEpoch.revealed = true;
+            randomIndexEpoch = epochIndex;
             epochIndex++;
             return resolveEpochIfNeeded();
         }
     }
 
-    function toString(uint256 value) internal pure returns (string memory) {
+    function toString(uint256 value) private pure returns (string memory) {
         if (value == 0) {
             return "0";
         }

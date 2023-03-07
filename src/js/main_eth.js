@@ -56,6 +56,37 @@ const contAbi = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_durationInHours",
+				"type": "uint256"
+			}
+		],
+		"name": "changeWinnerPickDuration",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -73,6 +104,101 @@ const contAbi = [
 		],
 		"name": "GemUpgraded",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "_mintAmount",
+				"type": "uint8"
+			}
+		],
+		"name": "mint",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_gemId",
+				"type": "uint256"
+			}
+		],
+		"name": "pickWinner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "_data",
+				"type": "bytes"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "setApprovalForAll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -100,6 +226,52 @@ const contAbi = [
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_gemOne",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_gemTwo",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_gemThree",
+				"type": "uint256"
+			}
+		],
+		"name": "upgradeGems",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -113,16 +285,23 @@ const contAbi = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "RANDOM",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "_gemId",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "withdrawBalance",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawCollectedFee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -142,24 +321,6 @@ const contAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "owner",
 				"type": "address"
 			}
@@ -173,19 +334,6 @@ const contAbi = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_durationInHours",
-				"type": "uint256"
-			}
-		],
-		"name": "changeWinnerPickDuration",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -366,19 +514,6 @@ const contAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "_mintAmount",
-				"type": "uint8"
-			}
-		],
-		"name": "mint",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "name",
 		"outputs": [
@@ -424,85 +559,16 @@ const contAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "RANDOM",
+		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "_gemId",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
-		"name": "pickWinner",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "safeTransferFrom",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bytes",
-				"name": "data",
-				"type": "bytes"
-			}
-		],
-		"name": "safeTransferFrom",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "operator",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "approved",
-				"type": "bool"
-			}
-		],
-		"name": "setApprovalForAll",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -541,49 +607,6 @@ const contAbi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "tokenByIndex",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "tokenOfOwnerByIndex",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
 				"name": "_gemId",
 				"type": "uint256"
 			}
@@ -601,65 +624,6 @@ const contAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "totalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_gemOne",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_gemTwo",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_gemThree",
-				"type": "uint256"
-			}
-		],
-		"name": "upgradeGems",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "winnerPickDuration",
 		"outputs": [
 			{
@@ -670,30 +634,10 @@ const contAbi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_gemId",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawBalance",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "withdrawCollectedFee",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	}
 ]
 
-const contAddress = "0x276c216d241856199a83bf27b2286659e5b877d3"; //Test FTM net hardhat
+const contAddress = "0x8242dE2B0F2bdFCF9afd90C221673620E8f9Ae92"; //Test FTM net/ hardhat
 
 var nftContract;
 var currentAddr;
@@ -748,10 +692,14 @@ async function loadWeb3() {
 
 		setChainListener(window.ethereum);
 		setAccListener(window.ethereum);
-
+		$('#connectButton').attr('disabled', true)
 		var chainID = await web3.eth.net.getId();
 		console.log('Connected to chain ' + chainID)
-		if (chainID == 31337) { //main 250, test 0xfa2 ///localhost hardhat 31337
+		if (chainID == 4002) { //4002 test net ftm //main 250, test 0xfa2 ///localhost hardhat 31337
+			$('#connectButton').attr('disabled', false);
+			$('#connectButton').click(function () {
+				connect();
+			});
 			await connect();
 			await loadContracts();
 		} else {
@@ -801,7 +749,8 @@ async function getMintTokenID(tx, num) {
 * ----------------------------*/
 async function mint(mintAmount) {
 	var mintPrice = 1e18;
-	// console.log(mintPrice);
+	// var mintPrice = nftContract.methods.mintCost().call();
+	console.log(mintPrice);
 	var totalPrice = mintPrice * mintAmount;
 
 	await nftContract.methods.mint(mintAmount).send({
@@ -1070,7 +1019,7 @@ async function pickWinner() {
 async function contractCreationTime() {
 	var blockNumber, time, date;
 
-	hash = '0x29a2406fed6ab066cb9c0d477e4b003939bc5f7096bef5e8f78b10179eb7d966'; // from create ftm-scan
+	hash = '0xbee995a661439fbcc8edf13df8c47ccd22667f2e40ff729aba607c86d7d33412'; // from create ftm-scan
 
 	await web3.eth.getTransactionReceipt(hash, function (err, rec) {
 		if (rec) {
@@ -1459,9 +1408,6 @@ window.addEventListener('contractLoaded', () => {
 	updateData();
 });
 
-$('#connectButton').click(function () {
-	connect();
-});
 const setAccListener = (ethereum) => {
 	ethereum.on("accountsChanged", pageReload);
 }
